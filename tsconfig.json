@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["src/*"]
+      },
+      "types": ["node", "vue-good-table"], // Thêm dòng này
+      "target": "esnext",
+      "module": "esnext",
+      "moduleResolution": "node",
+      "strict": true,
+      "jsx": "preserve",
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true
+    },
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.d.ts",
+      "src/**/*.tsx",
+      "src/**/*.vue",
+      "types/**/*.d.ts" // Thêm dòng này
+    ],
+    "exclude": [
+      "node_modules"
+    ]
+  }
