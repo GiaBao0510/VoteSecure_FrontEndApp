@@ -50,11 +50,40 @@ const routes =[
           path: 'roles',
           name: 'Roles',
           component: () => import("@/views/Admin/roles/roles.vue"),
-        }
+        },
+
+        //Đơn vị bầu cử
+        {
+          path: 'constituency',
+          name: 'Constituency',
+          component: () => import("@/views/Admin/constituencies/constituencies.vue"),
+        },
+        //Danh sách lịch sử đăng nhập
+        {
+          path: 'LoginHistoryList',
+          name: 'loginHistoryList',
+          component: () => import("@/views/Admin/loginHistory/loginHistoryList.vue"),
+        },
+        //Danh sách lịch sử đăng nhập cử tri
+        {
+          path: 'VoterLoginHistoryList',
+          name: 'voterLoginHistoryList',
+          component: () => import("@/views/Admin/loginHistory/voterLoginHistoryList.vue"),
+        },
+        //Danh sách lịch sử đăng nhập cán bộ
+        {
+          path: 'CadreLoginHistoryList',
+          name: 'cadreLoginHistoryList',
+          component: () => import("@/views/Admin/loginHistory/cadreLoginHistoryList.vue"),
+        },
+        //Danh sách lịch sử đăng nhập ứng cử viên
+        {
+          path: 'CandidateLoginHistoryList',
+          name: 'candidateLoginHistoryList',
+          component: () => import("@/views/Admin/loginHistory/candidateLoginHistoryList.vue"),
+        },
       ]
-
     }
-
 ];
 
 const router = createRouter({
