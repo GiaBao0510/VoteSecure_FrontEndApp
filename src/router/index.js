@@ -43,6 +43,13 @@ const routes =[
           path: 'elections',
           name: 'Elections',
           component: () => import("@/views/Admin/elections/elections.vue"),
+        },
+
+        //Vai trò
+        {
+          path: 'roles',
+          name: 'Roles',
+          component: () => import("@/views/Admin/roles/roles.vue"),
         }
       ]
 

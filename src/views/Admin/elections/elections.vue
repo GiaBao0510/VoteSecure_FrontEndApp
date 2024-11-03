@@ -1,56 +1,80 @@
 <template>
     <div class="mh-50">
-
-        <!--Phần nội dung tiêu đề chính-->
         <div class="container-fluid">
-            <div class="row bg-primary bg-gradient p-4 rounded-3 shadow mb-4">
-                <div class="col-12 d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-3">
-                        <div>
-                            <h1 class="text-white mb-0 fw-bold">Các kỳ bầu cử</h1>
+
+            <!--Phần nội dung tiêu đề chính-->
+           <ComponnetTitle :ComponnetName="ComponnetName" />
+            
+            <!--Phần nội dung bảng-->
+            <vgt-table
+                :columns="columns"
+                :rows="rows"
+                :search-options="{enabled: true}"
+                :pagination-options="{
+                    enabled: true,
+                    mode: 'records',
+                    perPage: 10
+                }"
+                :line-numbers="true"
+                max-height="70vh" 
+                :row-style-class="'cursor-pointer'"
+                @row-click="onRowClick"
+                
+            >
+                <template #table-actions>
+                    <div class="container">
+                        <div class="row">
+                            <!-- Hiển thị phần in thông tin -->
+                            <div class="col-sm">
+                                <button type="button" class="btn btn-warning" data-mdb-ripple-init>
+                                    <svg-icon type="mdi" :path="path"></svg-icon> Export PDF
+                                </button>
+                            </div>
+
+                            <!-- Hiển thị phần thêm -->
+                            <div class="col-sm">
+                                <button class="btn btn-outline-dark " @click="openAddModal">
+                                Thêm kỳ bầu cử
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class="d-flex flex-column align-items-stretch" name="hehe"> 
-                        <!-- Hiển thị ngày tháng năm -->
-                        <div class="badge bg-light text-primary text-center fs-6 rounded-pill px-3 w-100 mb-2">
-                            {{currentDate}}
-                        </div>
+                </template>
+            </vgt-table>
 
-                        <!-- Hiển thị phần in thông tin -->
-                        <div class="mt-1 w-100 mb-2">
-                            <button type="button" class="btn btn-warning w-100" data-mdb-ripple-init>
-                                <svg-icon type="mdi" :path="path"></svg-icon>
-                                Xuất file PDF
-                            </button>
+            <!-- Modal Thêm kỳ bầu cử -->
+            <div class="modal fade" id="electionModal" tabindex="-1" aria-labelledby="electionModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="electionModalLabel">Thêm kỳ bầu cử mới</h5>
+                            <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
                         </div>
-
-                        <!-- Hiển thị phần thêm -->
-                        <div class="w-100">
-                            <button class="btn btn-outline-light w-100"  @click="openModal">Thêm kỳ bầu cử</button>
+                        <div class="modal-body">
+                            <AddElection 
+                                @election-added="handleElectionAdded"
+                                v-if="showAddForm"
+                            />
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Modal Chi tiết Kỳ Bầu Cử -->
+            <ElectionDetail
+                v-if="showDetailModal"
+                :election="selectedElection"
+                @update-election="handleElectionUpdated"
+                @delete-election="handleElectionDeleted"
+                @close="closeDetailModal"
+            />
+
+            <!-- Loading Overlay -->
+            <Loading v-if="isLoading" />
         </div>
-        
-        <!--Phần nội dung bảng-->
-        <vgt-table
-        :columns="columns"
-        :rows="rows"
-        :search-options="{
-            enabled: true
-        }"
-        :pagination-options="{
-            enabled: true,
-            mode: 'records',
-            perPage: 10 // Số dòng hiển thị trên mỗi trang
-        }"
-        :line-numbers="true"
-        max-height="70vh" 
-        />
     </div>
 </template>
-  
+
 <script>
 import { VueGoodTable as VgtTable } from 'vue-good-table-next';
 import 'vue-good-table-next/dist/vue-good-table-next.css';
@@ -58,21 +82,24 @@ import api from '@/services/api.service';
 import shared from '@/services/shared.service';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiPrinter } from '@mdi/js';
-import FormElection from '@/components/forms/election/formElection.vue';
+import AddElection from '../../../components/elections/AddElection.vue';
+import Loading from '../../Loading.vue';
 import { Modal } from 'bootstrap';
+import ElectionDetail from '../../../components/elections/electionDetails.vue';
+import ComponnetTitle from '../ComponnetTitle.vue';
 
 export default {
     name: 'elections',
     components: {
         VgtTable,
-        getCurrentDate(){
-            return shared.currentDate();
-        },
         SvgIcon,
-        FormElection,
-        selectedElection: null,
-        modalInstance: null,
-        modalMode: 'view', // 'view', 'add', 'edit'
+        AddElection,
+        Loading,
+        ElectionDetail,
+        ComponnetTitle
+    },
+    props: {
+        ComponnetName: {type: String,default: 'elections'},
     },
     data() {
         return {
@@ -87,13 +114,6 @@ export default {
                 {
                     label: 'Thời điểm kết thúc',
                     field: 'ngayKT',
-                    type: 'date',
-                    dateInputFormat: 'dd/MM/yyyy HH:mm:ss',
-                    dateOutputFormat: 'dd/MM/yyyy HH:mm:ss',
-                },
-                {
-                    label: 'Thời điểm kết thúc ghi danh',
-                    field: 'ngayKT_UngCu',
                     type: 'date',
                     dateInputFormat: 'dd/MM/yyyy HH:mm:ss',
                     dateOutputFormat: 'dd/MM/yyyy HH:mm:ss',
@@ -115,8 +135,8 @@ export default {
                 },
                 {
                     label: 'Số lượng tối đa ứng cử viên',
-                    field: 'soLuongToiDaUngCuVien',
-                    type: 'number',
+                    field: 'soLuongToiDaUngCuVien' ,
+                    type: 'number'
                 },
                 {
                     label: 'Số lượt bình chọn tối đa',
@@ -129,34 +149,105 @@ export default {
                     type: 'number',
                 },
                 {
-                    label:' Chức năng'
+                    label: 'Công bố',
+                    field: 'congBo',
+                    type: 'string',
+                    formatFn: (value) => {
+                        return value === '0' || value === 0 ? 'Chưa công bố kết quả' : 'Đã công bố kết quả';
+                    }
                 }
             ],
             rows: [],
             currentDate: shared.currentDate(),
             path: mdiPrinter,
+            modalInstance: null,
+            showAddForm: false,
+            isLoading: false,
+            selectedElection: null,
+            showDetailModal: false,
         };
     },
     async created() {
-        console.log('Component created');
-        await this.TakeAllTheElections();
+        await this.fetchElections();
+    },
+    mounted() {
+        this.initModal();
     },
     methods: {
-        //Lấy dữ liệu
-        async TakeAllTheElections() {
+        //Khởi tạo modal thêm kỳ bầu cử
+        initModal() {
+            const modalEl = document.getElementById('electionModal');
+            this.modalInstance = new Modal(modalEl);
+        },
+
+        //Mở modal thêm kỳ bầu cử
+        openAddModal() {
+            this.showAddForm = true;
+            this.modalInstance.show();
+        },
+
+        //Đóng modal thêm kỳ bầu cử
+        closeModal() {
+            this.modalInstance.hide();
+            this.showAddForm = false;
+        },
+
+        //Tải dữ liệu từ server
+        async fetchElections() {
+            this.isLoading = true;
             try {
-                console.log('Fetching data...');
-                const res = await api.get('/api/Elections');
+                const res = await api.get(import.meta.env.VITE_ELECTION_API);
                 if (res.status === 200) {
                     this.rows = res.data.data;
-                    console.log('Data loaded:', this.rows);
+                    console.log(this.electionLocal);
                 } else if (res.status === 401) {
                     this.$router.push('/login');
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error fetching elections:', error);
+            } finally {
+                this.isLoading = false;
             }
-        }
+        },
+
+        //Xử lý khi thêm kỳ bầu cử thành công
+        async handleElectionAdded() {
+            await this.fetchElections();
+            this.closeModal();
+        },
+
+        // Khi một hàng trong bảng được bấm
+        onRowClick({ row }) {
+            this.selectedElection = row;
+            this.openDetailModal();
+        },
+        openDetailModal() {
+            this.showDetailModal = true;
+        },
+        closeDetailModal() {
+            this.showDetailModal = false;
+        },
+
+        // Xử lý khi kỳ bầu cử được cập nhật
+        async handleElectionUpdated() {
+            await this.fetchElections();
+            this.closeDetailModal();
+        },
+
+        // Xử lý khi kỳ bầu cử được xóa
+        async handleElectionDeleted() {
+            await this.fetchElections();
+            this.closeDetailModal();
+        },
     }
 };
 </script>
+
+<style>
+.cursor-pointer {
+    cursor: pointer;
+}
+.cursor-pointer:hover {
+    background-color: #e0e0e0;
+}
+</style>
