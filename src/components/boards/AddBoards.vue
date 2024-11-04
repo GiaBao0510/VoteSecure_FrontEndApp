@@ -1,5 +1,5 @@
 <script>
-    import EntityForm from './PositionForm.vue';
+    import EntityForm from './boardForm.vue';
     import api from '../../services/api.service';
     import Swal from "sweetalert2";
     import Loading from '../../views/Loading.vue';
@@ -13,8 +13,8 @@
             return{
                 isLoading: false,
                 entity: {
-                    tenCapUngCu:'',
-                    iD_DonViBauCu:-1
+                    tenBan:'',
+                    iD_DonViBauCu:-1,
                 },
             }
         },
@@ -23,10 +23,10 @@
             async AddEntity(entity){
                 this.isLoading = true;
                 try{
-                    console.log('api add: ',import.meta.env.VITE_LIST_OF_POSITIONS_API);
+                    console.log('api add: ',import.meta.env.VITE_BOARD_API);
                     console.log('input: ',entity);
-                    const response = await api.post(import.meta.env.VITE_LIST_OF_POSITIONS_API,{
-                        tenCapUngCu: entity.tenCapUngCu,
+                    const response = await api.post(import.meta.env.VITE_BOARD_API,{
+                        tenBan: entity.tenBan,
                         iD_DonViBauCu: entity.iD_DonViBauCu,
                     });
 

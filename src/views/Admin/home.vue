@@ -15,7 +15,7 @@
         >
           <div class="sidebar-toggle" @click="toggleSidebar">
             <i :class="isMobileSidebar ? 'bi bi-x-lg' : 'bi bi-list'"></i>
-            <svg-icon type="mdi" :path="path"></svg-icon>
+            <svg-icon type="mdi" :path="pathMenu"></svg-icon>
           </div>
 
           <div
@@ -45,6 +45,7 @@
                   >
                     <span>
                       <i :class="item.icon"></i>
+                      <svg-icon type="mdi" :path="pathHistory"></svg-icon>
                       <span class="ms-1 d-none d-sm-inline">{{ item.title }}</span>
                     </span>
                     <i :class="lichSuDangNhapOpen ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
@@ -118,20 +119,26 @@
               <div v-if="mucHienThi === 3">
                 <constituencies :ComponnetName="'Các đơn vị bầu cử'" />
               </div>
-              <!-- Phần này của lịch sử đăng nhập -->
+                <!------------ Phần này của lịch sử đăng nhập ----------->
               <div v-if="mucHienThi === 9">
                 <loginHistory :ComponnetName="'Danh sách lịch sử đăng nhập'"/>
               </div>
               <div v-if="mucHienThi === 10">
-                <votersLoginHistory :ComponnetName="'Danh sách lịch sử đăng nhập'"/>
+                <votersLoginHistory :ComponnetName="'Danh sách lịch sử đăng nhập cử tri'"/>
               </div>
               <div v-if="mucHienThi === 11">
-                <candidatesLoginHistory :ComponnetName="'Danh sách lịch sử đăng nhập'"/>
+                <candidatesLoginHistory :ComponnetName="'Danh sách lịch sử đăng nhập ứng cử viên'"/>
               </div>
               <div v-if="mucHienThi === 12">
-                <cadreLoginHistoryList :ComponnetName="'Danh sách lịch sử đăng nhập'"/>
+                <cadreLoginHistoryList :ComponnetName="'Danh sách lịch sử đăng nhập cán bộ'"/>
               </div>
-              <!-- Add more content sections as needed -->
+                <!------------------------------------->
+              <div v-if="mucHienThi === 5">
+                <listOfPositions :ComponnetName="'Danh mục ứng cử'" />
+              </div>
+              <div v-if="mucHienThi === 6">
+                <boards :ComponnetName="'Các Ban'" />
+              </div>
             </div>
           </div>
         </div>
@@ -141,17 +148,19 @@
 </template>
   
 <script>
-import AdminHeader from './AdminHeader.vue';
-import elections from './elections/elections.vue';
-import roles from './roles/roles.vue';
-import loginHistory from './loginHistory/loginHistoryList.vue';
-import votersLoginHistory from './loginHistory/voterLoginHistoryList.vue';
-import candidatesLoginHistory from './loginHistory/candidateLoginHistoryList.vue';
-import cadreLoginHistoryList from './loginHistory/cadreLoginHistoryList.vue';
-import constituencies from './constituencies/constituencies.vue';
-import authService from '../../services/auth.service';
-import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiMenu } from '@mdi/js';
+  import AdminHeader from './AdminHeader.vue';
+  import elections from './elections/elections.vue';
+  import roles from './roles/roles.vue';
+  import loginHistory from './loginHistory/loginHistoryList.vue';
+  import votersLoginHistory from './loginHistory/voterLoginHistoryList.vue';
+  import candidatesLoginHistory from './loginHistory/candidateLoginHistoryList.vue';
+  import cadreLoginHistoryList from './loginHistory/cadreLoginHistoryList.vue';
+  import constituencies from './constituencies/constituencies.vue';
+  import boards from './boards/boards.vue'; 
+  import listOfPositions from './listOfPositions/listOfPosition.vue';
+  import authService from '../../services/auth.service';
+  import SvgIcon from '@jamescoyle/vue-icon';
+  import { mdiMenu, mdiHistory } from '@mdi/js';
   
 export default {
   components: {
@@ -163,13 +172,16 @@ export default {
     loginHistory,
     votersLoginHistory,
     candidatesLoginHistory,
-    cadreLoginHistoryList
+    cadreLoginHistoryList,
+    listOfPositions,
+    boards,
   },
   data() {
     return {
       mucHienThi: 0,
       isMobileSidebar: false,
-      path: mdiMenu,
+      pathMenu: mdiMenu, // Thêm dòng này
+      pathHistory: mdiHistory, // Thêm dòng này
       lichSuDangNhapOpen: false,
       menuItems: [
         { title: 'Thống kê', icon: 'bi bi-graph-up' },        //0
@@ -178,6 +190,8 @@ export default {
         { title: 'Đơn vị bầu cử', icon: 'bi bi-person' }, //3
         { title: 'Lịch sử đăng nhập', icon: 'bi bi-pen' },  
         { title: 'Danh mục ứng cử', icon: 'bi bi-building' },
+        { title: 'Ban', icon: 'bi bi-bookmark' },
+        { title: 'Sách đã mượn', icon: 'bi bi-bookmark' },
         { title: 'Sách đã mượn', icon: 'bi bi-bookmark' },
         { title: 'Sách đã mượn', icon: 'bi bi-bookmark' },
       ]

@@ -82,6 +82,18 @@ const routes =[
           name: 'candidateLoginHistoryList',
           component: () => import("@/views/Admin/loginHistory/candidateLoginHistoryList.vue"),
         },
+        //Danh sách các đơn vị ứng cử
+        {
+          path: 'ListOfPosition',
+          name: 'listOfPosition',
+          component: () => import("@/views/Admin/listOfPositions/listOfPosition.vue"),
+        },
+        //Danh sách các ban
+        {
+          path: 'Boards',
+          name: 'boards',
+          component: () => import("@/views/Admin/boards/boards.vue"),
+        },
       ]
     }
 ];

@@ -1,77 +1,76 @@
 <template>
     <div class="mh-50">
-        <div class="container-fluid">
+    <div class="container-fluid">
 
-            <!--Phần nội dung tiêu đề chính-->
-           <ComponnetTitle :ComponnetName="ComponnetName" />
-            
-            <!--Phần nội dung bảng-->
-            <vgt-table
-                :columns="columns"
-                :rows="rows"
-                :search-options="{enabled: true}"
-                :pagination-options="{
-                    enabled: true,
-                    mode: 'records',
-                    perPage: 10
-                }"
-                :line-numbers="true"
-                max-height="70vh" 
-                :row-style-class="'cursor-pointer'"
-                @row-click="onRowClick"
-            >
-                <template #table-actions>
-                    <div class="container">
-                        <div class="row">
-                            <!-- Hiển thị phần in thông tin -->
-                            <div class="col-sm">
-                                <button type="button" class="btn btn-warning" data-mdb-ripple-init>
-                                    <svg-icon type="mdi" :path="path"></svg-icon> Export PDF
-                                </button>
-                            </div>
-
-                            <!-- Hiển thị phần thêm -->
-                            <div class="col-sm">
-                                <button class="btn btn-outline-dark " @click="openAddModal">
-                                Thêm kỳ vai trò
-                                </button>
-                            </div>
+        <!--Phần nội dung tiêu đề chính-->
+       <ComponnetTitle :ComponnetName="ComponnetName" />
+        
+        <!--Phần nội dung bảng-->
+        <vgt-table
+            :columns="columns"
+            :rows="rows"
+            :search-options="{enabled: true}"
+            :pagination-options="{
+                enabled: true,
+                mode: 'records',
+                perPage: 10
+            }"
+            :line-numbers="true"
+            max-height="70vh" 
+            :row-style-class="'cursor-pointer'"
+            @row-click="onRowClick"
+        >
+            <template #table-actions>
+                <div class="container">
+                    <div class="row">
+                        <!-- Hiển thị phần in thông tin -->
+                        <div class="col-sm">
+                            <button type="button" class="btn btn-warning" data-mdb-ripple-init>
+                                <svg-icon type="mdi" :path="path"></svg-icon> Export PDF
+                            </button>
                         </div>
-                    </div>
-                </template>
-            </vgt-table>
 
-            <!-- Modal Thêm-->
-            <div class="modal fade" id="AddModal" tabindex="-1" aria-labelledby="DataModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="DataModalLabel">Thêm vai trò mới</h5>
-                            <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <AddRole 
-                                @Data-added="handleDataAdded"
-                                v-if="showAddForm"
-                            />
+                        <!-- Hiển thị phần thêm -->
+                        <div class="col-sm">
+                            <button class="btn btn-outline-dark " @click="openAddModal">
+                            Thêm ban</button>
                         </div>
                     </div>
                 </div>
+            </template>
+        </vgt-table>
+
+        <!-- Modal Thêm-->
+        <div class="modal fade" id="AddModal" tabindex="-1" aria-labelledby="DataModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="DataModalLabel">Thêm ban mới</h5>
+                        <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <AddForm 
+                            @Data-added="handleDataAdded"
+                            v-if="showAddForm"
+                        />
+                    </div>
+                </div>
             </div>
-
-            <!-- Modal Chi tiết-->
-            <RoleDetail
-                v-if="showDetailModal"
-                :role="selected"
-                @update-Data="handleDataUpdated"
-                @delete-Data="handleDataDeleted"
-                @close="closeDetailModal"
-            />
-
-            <!-- Loading Overlay -->
-            <Loading v-if="isLoading" />
         </div>
+
+        <!-- Modal Chi tiết-->
+        <DetailedForm
+            v-if="showDetailModal"
+            :entity="selected"
+            @update-Data="handleDataUpdated"
+            @delete-Data="handleDataDeleted"
+            @close="closeDetailModal"
+        />
+
+        <!-- Loading Overlay -->
+        <Loading v-if="isLoading" />
     </div>
+</div>
 </template>
 
 <script>
@@ -81,10 +80,10 @@ import api from '@/services/api.service';
 import shared from '@/services/shared.service';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiPrinter } from '@mdi/js';
-import AddRole from '../../../components/roles/AddRoles.vue';
+import AddForm from '../../../components/boards/AddBoards.vue';
 import Loading from '../../Loading.vue';
 import { Modal } from 'bootstrap';
-import RoleDetail from '../../../components/roles/RoleDetails.vue';
+import DetailedForm from '../../../components/boards/boarDetails.vue';
 import ComponnetTitle from '../ComponnetTitle.vue';
 
 export default {
@@ -92,9 +91,9 @@ export default {
     components: {
         VgtTable,
         SvgIcon,
-        AddRole,
+        AddForm,
         Loading,
-        RoleDetail,
+        DetailedForm,
         ComponnetTitle
     },
     props: {
@@ -104,14 +103,19 @@ export default {
         return {
             columns: [
                 {
-                    label: 'Mã kỳ vai trò',
-                    field: 'roleID',
+                    label: 'Mã ban',
+                    field: 'iD_Ban',
+                    type: 'number',
+                },
+                {
+                    label: 'Tên ban',
+                    field: 'tenBan',
                     type: 'string',
                 },
                 {
-                    label: 'Tên vai trò',
-                    field: 'tenVaiTro',
-                    type: 'string',
+                    label: 'ID đơn vị bầu cử',
+                    field: 'iD_DonViBauCu',
+                    type: 'number',
                 },
             ],
             rows: [],
@@ -153,7 +157,7 @@ export default {
         async fetchDatas() {
             this.isLoading = true;
             try {
-                const res = await api.get(import.meta.env.VITE_ROLE_API);
+                const res = await api.get(import.meta.env.VITE_BOARD_API);
                 if (res.status === 200) {
                     this.rows = res.data.data;
                 } else if (res.status === 401) {

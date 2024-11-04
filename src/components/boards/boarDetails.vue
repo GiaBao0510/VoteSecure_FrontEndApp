@@ -1,5 +1,5 @@
 <script>
-    import EntityForm from './PositionForm.vue';
+    import EntityForm from './boardForm.vue';
     import Swal from "sweetalert2";
     import api from '../../services/api.service';
 
@@ -25,9 +25,9 @@
             //Cập nhật
             async Update(data){
                 try{
-                    const response = await api.put(`${import.meta.env.VITE_LIST_OF_POSITIONS_API}/${data.iD_Cap}`,{
-                        tenCapUngCu: data.tenCapUngCu,
-                        iD_DonViBauCu: data.iD_DonViBauCu,
+                    const response = await api.put(`${import.meta.env.VITE_BOARD_API}/${data.iD_Ban}`,{
+                        tenBan: data.tenBan,
+                        ID_DonViBauCu: data.iD_DonViBauCu,
                     });
                     console.log(">>> status: " + response.status);
                     if(response.status === 200){
@@ -64,10 +64,10 @@
             },
 
             //Xóa
-            async Delete(iD_Cap){
+            async Delete(ID){
                 try{
-                    console.log("Xóa: ",iD_Cap);
-                    console.log("Api: ",`${import.meta.env.VITE_LIST_OF_POSITIONS_API}/${iD_Cap}`);
+                    console.log("Xóa: ",ID);
+                    console.log("Api: ",`${import.meta.env.VITE_BOARD_API}/${ID}`);
                     const result = await Swal.fire({
                         title: 'Bạn có chắc chắn muốn xóa?',
                         text: 'Hành động này không thể hoàn tác!',
@@ -78,7 +78,8 @@
                     });
 
                     if (result.isConfirmed) {
-                        const response = await api.delete(`${import.meta.env.VITE_LIST_OF_POSITIONS_API}/${iD_Cap}`);
+                       
+                        const response = await api.delete(`${import.meta.env.VITE_BOARD_API}/${ID}`);
                         if (response.status === 200) {
                             Swal.fire({
                                 icon: 'success',
@@ -114,7 +115,7 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Chi tiết đơn vị bầu cử</h5>
+                        <h5 class="modal-title">Chi tiết ban</h5>
                         <button type="button" class="btn-close" @click="$emit('close')"></button>
                     </div>
                     <div class="modal-body">

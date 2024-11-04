@@ -33,7 +33,7 @@
                         <!-- Hiển thị phần thêm -->
                         <div class="col-sm">
                             <button class="btn btn-outline-dark " @click="openAddModal">
-                            Thêm kỳ đơn vị bầu cử </button>
+                            Thêm kỳ vị trí </button>
                         </div>
                     </div>
                 </div>
@@ -80,10 +80,10 @@ import api from '@/services/api.service';
 import shared from '@/services/shared.service';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiPrinter } from '@mdi/js';
-import AddForm from '../../../components/constituencies/AddConstituency.vue';
+import AddForm from '../../../components/listOfPositions/AddPosition.vue';
 import Loading from '../../Loading.vue';
 import { Modal } from 'bootstrap';
-import DetailedForm from '../../../components/constituencies/constituencyDetails.vue';
+import DetailedForm from '../../../components/listOfPositions/PositionDetails.vue';
 import ComponnetTitle from '../ComponnetTitle.vue';
 
 export default {
@@ -103,24 +103,19 @@ export default {
         return {
             columns: [
                 {
-                    label: 'Mã kỳ đơn vị bầu cử',
+                    label: 'Mã cấp ứng cử',
+                    field: 'iD_Cap',
+                    type: 'number',
+                },
+                {
+                    label: 'Tên cấp ứng cử',
+                    field: 'tenCapUngCu',
+                    type: 'string',
+                },
+                {
+                    label: 'ID đơn vị bầu cử',
                     field: 'iD_DonViBauCu',
-                    type: 'number',
-                },
-                {
-                    label: 'Tên đơn vị bầu cử',
-                    field: 'tenDonViBauCu',
                     type: 'string',
-                },
-                {
-                    label: 'Địa chỉ',
-                    field: 'diaChi',
-                    type: 'string',
-                },
-                {
-                    label: 'Mã Quận/Huyện',
-                    field: 'iD_QH',
-                    type: 'number',
                 },
             ],
             rows: [],

@@ -16,8 +16,8 @@
         emits:['submit:entity','delete:entity'],
         data(){
             const entitySchema = yup.object().shape({
-                iD_CapUngCu: yup.number(),
-                tenCapUngCu: yup.string().required('Tên cấp ứng cử không được để trống'),
+                iD_Ban: yup.number(),
+                tenBan: yup.string().required('Tên ban không được để trống'),
                 iD_DonViBauCu: yup.number().required('ID đơn vị bầu cử không được để trống'),
             });
             return {
@@ -30,8 +30,8 @@
         computed:{
             //Kiểm tra điều kiện trước khi hiển thị nút xóa
             showDeleteButton(){
-                return this.entityLocal.iD_Cap !== undefined || 
-                    this.entityLocal.iD_Cap !== null;
+                return this.entityLocal.iD_Ban !== undefined || 
+                    this.entityLocal.iD_Ban !== null;
             }
         },
         methods:{
@@ -42,7 +42,7 @@
 
             //Xóa 
             deleteEntity(){
-                this.$emit('delete:entity', this.entityLocal.iD_Cap);
+                this.$emit('delete:entity', this.entityLocal.iD_Ban);
             }
         }
     }
@@ -51,15 +51,15 @@
 <template>
     <div class="container py-5">
         <Form @submit="submit" :validation-schema="entitySchema" v-slot="{errors}" method="post">
-            <div class="mb-3" v-if="entityLocal.iD_CapUngCu != null" >
-                <label for="iD_CapUngCu" class="form-label">ID cấp ứng cử</label>
-                <Field name="iD_CapUngCu" type="text" class="form-control" v-model="entityLocal.iD_CapUngCu" disabled />
-                <ErrorMessage name="iD_CapUngCu" class="text-danger small"/>
+            <div class="mb-3" v-if="entityLocal.iD_Ban != null" >
+                <label for="iD_Ban" class="form-label">ID ban</label>
+                <Field name="iD_Ban" type="text" class="form-control" v-model="entityLocal.iD_Ban" disabled />
+                <ErrorMessage name="iD_Ban" class="text-danger small"/>
             </div>
             <div class="mb-3">
-                <label for="tenCapUngCu" class="form-label">Tên cấp ứng cử</label>
-                <Field name="tenCapUngCu" type="text" class="form-control" v-model="entityLocal.tenCapUngCu" />
-                <ErrorMessage name="tenCapUngCu" class="text-danger small"/>
+                <label for="tenBan" class="form-label">Tên ban</label>
+                <Field name="tenBan" type="text" class="form-control" v-model="entityLocal.tenBan" />
+                <ErrorMessage name="tenBan" class="text-danger small"/>
             </div>
             <div class="mb-3" >
                 <label for="iD_DonViBauCu" class="form-label">ID đơn vị bầu cử</label>
@@ -74,7 +74,7 @@
                 <button
                     type="button"
                     class="btn btn-danger"
-                    @click="deleteEntity" 
+                    @click="deleteEntity"
                     v-if="showDeleteButton"
                 >
                     <svg-icon type="mdi" :path="pathDelete" class="me-2"></svg-icon>Xóa
