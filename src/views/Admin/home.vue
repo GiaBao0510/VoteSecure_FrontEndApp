@@ -31,6 +31,7 @@
               { 'sidebar-menu': isMobileSidebar },
             ]"
           >
+              <!-- >>>>>>>>>>>> Lịch sử đăng nhập <<<<<<<<<<<<< -->
             <ul
               class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start w-100"
               id="menu"
@@ -53,25 +54,87 @@
                   <!-- Mục con của lích sử đăng nhập -->
                   <ul class="nav flex-column ms-3" v-if="lichSuDangNhapOpen">
                     <li class="nav-item">
-                      <a href="#" class="nav-link px-3 text-white" @click.prevent="ChonMucHienThi(9)">
+                      <a href="#" class="nav-link px-3 text-white" @click.prevent="ChonMucHienThi(59)">
                         <i class="bi bi-dot"></i>
                         <span class="ms-1 d-none d-sm-inline">Danh sách lịch sử đăng nhập</span>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="#" class="nav-link px-3 text-white"@click.prevent="ChonMucHienThi(10)">
+                      <a href="#" class="nav-link px-3 text-white"@click.prevent="ChonMucHienThi(60)">
                         <i class="bi bi-dot"></i>
                         <span class="ms-1 d-none d-sm-inline">Danh sách lịch sử đăng nhập cử tri</span>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="#" class="nav-link px-3 text-white"@click.prevent="ChonMucHienThi(11)">
+                      <a href="#" class="nav-link px-3 text-white"@click.prevent="ChonMucHienThi(61)">
                         <i class="bi bi-dot"></i>
                         <span class="ms-1 d-none d-sm-inline">Danh sách lịch sử đăng nhập ứng cử viên</span>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a href="#" class="nav-link px-3 text-white"@click.prevent="ChonMucHienThi(12)">
+                      <a href="#" class="nav-link px-3 text-white"@click.prevent="ChonMucHienThi(62)">
+                        <i class="bi bi-dot"></i>
+                        <span class="ms-1 d-none d-sm-inline">Danh sách lịch sử đăng nhập cán bộ</span>
+                      </a>
+                    </li>
+                  </ul>
+                </template>
+
+                <!-- Regular menu items -->
+                <template v-else>
+                  <a
+                    href="#"
+                    class="nav-link px-3 text-white"
+                    :class="{ active: mucHienThi === index }"
+                    @click.prevent="ChonMucHienThi(index)"
+                  >
+                    <i :class="item.icon"></i>
+                    <span class="ms-1 d-none d-sm-inline">{{ item.title }}</span>
+                  </a>
+                </template>
+              </li>
+            </ul>
+                    <!-- >>>>>>>>>>>> Phản hồi <<<<<<<<<<<<< -->
+            <ul
+              class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start w-100"
+              id="menu"
+            >
+              <li class="nav-item w-100" v-for="(item, index) in menuItems" :key="index">
+                <template v-if="index === 4">
+                  <a
+                    href="#"
+                    class="nav-link px-3 text-white d-flex justify-content-between align-items-center"
+                    @click.prevent="toggleLichSuDangNhap"
+                  >
+                    <span>
+                      <i :class="item.icon"></i>
+                      <svg-icon type="mdi" :path="pathHistory"></svg-icon>
+                      <span class="ms-1 d-none d-sm-inline">{{ item.title }}</span>
+                    </span>
+                    <i :class="lichSuDangNhapOpen ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                  </a>
+                  <!-- Mục con của phản hồi -->
+                  <ul class="nav flex-column ms-3" v-if="lichSuDangNhapOpen">
+                    <li class="nav-item">
+                      <a href="#" class="nav-link px-3 text-white" @click.prevent="ChonMucHienThi(59)">
+                        <i class="bi bi-dot"></i>
+                        <span class="ms-1 d-none d-sm-inline">Danh sách phản hồi cử tri</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="#" class="nav-link px-3 text-white"@click.prevent="ChonMucHienThi(60)">
+                        <i class="bi bi-dot"></i>
+                        <span class="ms-1 d-none d-sm-inline">Danh sách phản hồi ưunsg</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="#" class="nav-link px-3 text-white"@click.prevent="ChonMucHienThi(61)">
+                        <i class="bi bi-dot"></i>
+                        <span class="ms-1 d-none d-sm-inline">Danh sách lịch sử đăng nhập ứng cử viên</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a href="#" class="nav-link px-3 text-white"@click.prevent="ChonMucHienThi(62)">
                         <i class="bi bi-dot"></i>
                         <span class="ms-1 d-none d-sm-inline">Danh sách lịch sử đăng nhập cán bộ</span>
                       </a>
@@ -120,16 +183,16 @@
                 <constituencies :ComponnetName="'Các đơn vị bầu cử'" />
               </div>
                 <!------------ Phần này của lịch sử đăng nhập ----------->
-              <div v-if="mucHienThi === 9">
+              <div v-if="mucHienThi === 59">
                 <loginHistory :ComponnetName="'Danh sách lịch sử đăng nhập'"/>
               </div>
-              <div v-if="mucHienThi === 10">
+              <div v-if="mucHienThi === 60">
                 <votersLoginHistory :ComponnetName="'Danh sách lịch sử đăng nhập cử tri'"/>
               </div>
-              <div v-if="mucHienThi === 11">
+              <div v-if="mucHienThi === 61">
                 <candidatesLoginHistory :ComponnetName="'Danh sách lịch sử đăng nhập ứng cử viên'"/>
               </div>
-              <div v-if="mucHienThi === 12">
+              <div v-if="mucHienThi === 62">
                 <cadreLoginHistoryList :ComponnetName="'Danh sách lịch sử đăng nhập cán bộ'"/>
               </div>
                 <!------------------------------------->
@@ -138,6 +201,12 @@
               </div>
               <div v-if="mucHienThi === 6">
                 <boards :ComponnetName="'Các Ban'" />
+              </div>
+              <div v-if="mucHienThi === 7">
+                <province :ComponnetName="'Các Tỉnh thành'" />
+              </div>
+              <div v-if="mucHienThi === 8">
+                <district :ComponnetName="'Các Quận/Huyện'" />
               </div>
             </div>
           </div>
@@ -157,6 +226,8 @@
   import cadreLoginHistoryList from './loginHistory/cadreLoginHistoryList.vue';
   import constituencies from './constituencies/constituencies.vue';
   import boards from './boards/boards.vue'; 
+  import province from './provinces/provinces.vue';
+  import district from './districts/districts.vue';
   import listOfPositions from './listOfPositions/listOfPosition.vue';
   import authService from '../../services/auth.service';
   import SvgIcon from '@jamescoyle/vue-icon';
@@ -175,6 +246,8 @@ export default {
     cadreLoginHistoryList,
     listOfPositions,
     boards,
+    province,
+    district,
   },
   data() {
     return {
@@ -189,10 +262,12 @@ export default {
         { title: 'Vai trò', icon: 'bi bi-people' },  //2
         { title: 'Đơn vị bầu cử', icon: 'bi bi-person' }, //3
         { title: 'Lịch sử đăng nhập', icon: 'bi bi-pen' },  
-        { title: 'Danh mục ứng cử', icon: 'bi bi-building' },
-        { title: 'Ban', icon: 'bi bi-bookmark' },
-        { title: 'Sách đã mượn', icon: 'bi bi-bookmark' },
-        { title: 'Sách đã mượn', icon: 'bi bi-bookmark' },
+        { title: 'Danh mục ứng cử', icon: 'bi bi-building' }, //5
+        { title: 'Ban', icon: 'bi bi-bookmark' },             //6
+        { title: 'Tỉnh thành', icon: 'bi bi-bookmark' },      //7
+        { title: 'Quận/Huyện', icon: 'bi bi-bookmark' },      //8
+        { title: 'Phản hồi', icon: 'bi bi-bookmark' },        //9
+        { title: 'Sách đã mượn', icon: 'bi bi-bookmark' },    //10
         { title: 'Sách đã mượn', icon: 'bi bi-bookmark' },
       ]
     }

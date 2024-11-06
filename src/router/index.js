@@ -94,6 +94,18 @@ const routes =[
           name: 'boards',
           component: () => import("@/views/Admin/boards/boards.vue"),
         },
+        //Danh sách các tỉnh thành
+        {
+          path: 'Province',
+          name: 'province',
+          component: () => import("@/views/Admin/provinces/provinces.vue"),
+        },
+        //Quận/Huyện
+        {
+          path: 'District',
+          name: 'district',
+          component: () => import("@/views/Admin/districts/districts.vue"),
+        },
       ]
     }
 ];
