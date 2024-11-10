@@ -1,0 +1,73 @@
+  /* Minimal custom CSS */
+  .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+    
+  .nav-link.active {
+    background-color: #0d6efd !important;
+  }
+    
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  .sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1050;
+    color: white;
+    background-color: #0d6efd;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  /* Optional: Custom styles */
+  .nav .nav {
+    padding-left: 1rem;
+  }
+
+  .nav .nav .nav-link {
+    font-size: 0.9rem;
+  }
+
+  .nav .nav .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+  }
+
+  .nav .nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  @media (max-width: 1100px) {
+    .sidebar-toggle {
+      display: block;
+    }
+
+    .sidebar-container {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100vh;
+      transition: left 0.3s ease;
+      z-index: 1040;
+      max-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .mobile-sidebar {
+      left: 0;
+    }
+
+    .mobile-sidebar .sidebar-menu {
+      display: block !important;
+    }
+
+    .main-content-shifted {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }

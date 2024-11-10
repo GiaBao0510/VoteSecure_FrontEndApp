@@ -25,7 +25,7 @@
                         <!-- Hiển thị phần in thông tin -->
                         <div class="col-sm">
                             <button type="button" class="btn btn-warning" data-mdb-ripple-init @click="exportToExcel">
-                                <svg-icon type="mdi" :path="path"></svg-icon> Export Excel
+                                <svg-icon type="mdi" :path="path"></svg-icon> Export PDF
                             </button>
                         </div>
                     </div>
@@ -66,6 +66,11 @@ export default {
         return {
             columns: [
                 {
+                    label: 'Ý kiến',
+                    field: 'yKien',
+                    type: 'string',
+                },
+                {
                     label: 'Thời điểm',
                     field: 'thoiDiem',
                     type: 'string',
@@ -74,13 +79,13 @@ export default {
                     },
                 },
                 {
-                    label: 'Địa chỉ IP',
-                    field: 'diaChiIP',
+                    label: 'Mã người dùng',
+                    field: 'userID',
                     type: 'string',
                 },
                 {
-                    label: 'Tài khoản',
-                    field: 'taiKhoan',
+                    label: 'Họ tên',
+                    field: 'hoTen',
                     type: 'string',
                 },
             ],
@@ -102,7 +107,7 @@ export default {
         async fetchDatas() {
             this.isLoading = true;
             try {
-                const res = await api.get(import.meta.env.VITE_VOTER_LOGIN_HISTORY_LIST_API);
+                const res = await api.get(import.meta.env.VITE_CADRE_FEEDBACK_API);
                 if (res.status === 200) {
                     this.rows = res.data.data;
                 } else if (res.status === 401) {
@@ -120,7 +125,7 @@ export default {
             const workbook = XLSX.utils.book_new();
             const worksheet = XLSX.utils.json_to_sheet(this.rows);
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Feedback');
-            XLSX.writeFile(workbook, 'DonViBauCu.xlsx');
+            XLSX.writeFile(workbook, 'cadre-feedback.xlsx');
         }
     }
 };

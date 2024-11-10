@@ -106,6 +106,56 @@ const routes =[
           name: 'district',
           component: () => import("@/views/Admin/districts/districts.vue"),
         },
+        //Phản hồi cử tri
+        {
+          path: 'VoterFeedback',
+          name: 'voterFeedback',
+          component: () => import("@/views/Admin/Feedback/getVoterFeedbackList.vue"),
+        },
+        //Phản hồi ứng cử viên
+        {
+          path: 'CandiadateFeedback',
+          name: 'candiadateFeedback',
+          component: () => import("@/views/Admin/Feedback/getCandidateFeedbackList.vue"),
+        },
+        //Phản hồi cán bố
+        {
+          path: 'CadreFeedback',
+          name: 'cadreFeedback',
+          component: () => import("@/views/Admin/Feedback/getCadreFeedbackList.vue"),
+        },
+        //Danh sách phiếu bầu theo năm
+        {
+          path: 'EncryptedVotesBasedOnElectionYear',
+          name: 'encryptedVotesBasedOnElectionYear',
+          component: () => import("@/views/Admin/votes/GetDetailedInformationAboutEncryptedVotesBasedOnElectionYear.vue"),
+        },
+        //Danh sách phiếu bầu mã hóa theo thời điểm
+        {
+          path: 'EncryptedVotesBasedOnElectionDate',
+          name: 'encryptedVotesBasedOnElectionDate',
+          component: () => import("@/views/Admin/votes/GetDetailsAboutEncryptedVotesBasedOnElectionDate.vue"),
+          props: route =>({ngayBatDauDuocNhan: route.query.ngayBD})
+        },
+        //Danh sách phiếu bầu giải  mã theo thời điểm
+        {
+          path: 'GetListOfDecodedVotesBasedOnElectionDate',
+          name: 'getListOfDecodedVotesBasedOnElectionDate',
+          component: () => import("@/views/Admin/votes/GetListOfDecodedVotesBasedOnElectionDate.vue"),
+          props: route => ({ngayBatDauDuocNhan: route.query.ngayBD}),
+        },
+        //Danh sách chi tiết các cuộc bầu cử diễn ra trong năm
+        {
+          path: 'GetDetailsListOfElectionBassedOnYear',
+          name: 'getDetailsListOfElectionBassedOnYear',
+          component: () => import("@/views/Admin/elections/GetDetailsListOfElectionBassedOnYear.vue"),
+        },
+        //Danh sách cử tri
+        {
+          path: 'Voters',
+          name: 'voters',
+          component: () => import("@/views/Admin/voters/voters.vue"),
+        },
       ]
     }
 ];

@@ -25,8 +25,8 @@
                     <div class="row">
                         <!-- Hiển thị phần in thông tin -->
                         <div class="col-sm">
-                            <button type="button" class="btn btn-warning" data-mdb-ripple-init>
-                                <svg-icon type="mdi" :path="path"></svg-icon> Export PDF
+                            <button type="button" class="btn btn-warning" data-mdb-ripple-init @click="exportToExcel">
+                                <svg-icon type="mdi" :path="path"></svg-icon> Export Excel
                             </button>
                         </div>
 
@@ -85,6 +85,7 @@ import Loading from '../../Loading.vue';
 import { Modal } from 'bootstrap';
 import DetailedForm from '../../../components/boards/boarDetails.vue';
 import ComponnetTitle from '../ComponnetTitle.vue';
+import * as XLSX from 'xlsx';
 
 export default {
     name: 'Datas',
@@ -199,6 +200,14 @@ export default {
             await this.fetchDatas();
             this.closeDetailModal();
         },
+
+        //Xuất file excel
+        exportToExcel() {
+            const workbook = XLSX.utils.book_new();
+            const worksheet = XLSX.utils.json_to_sheet(this.rows);
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Feedback');
+            XLSX.writeFile(workbook, 'Ban.xlsx');
+        }
     }
 };
 </script>

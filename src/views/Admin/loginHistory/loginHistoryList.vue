@@ -24,8 +24,8 @@
                     <div class="row">
                         <!-- Hiển thị phần in thông tin -->
                         <div class="col-sm">
-                            <button type="button" class="btn btn-warning" data-mdb-ripple-init>
-                                <svg-icon type="mdi" :path="path"></svg-icon> Export PDF
+                            <button type="button" class="btn btn-warning" data-mdb-ripple-init @click="exportToExcel">
+                                <svg-icon type="mdi" :path="path"></svg-icon> Export Excel
                             </button>
                         </div>
                     </div>
@@ -49,6 +49,7 @@ import { mdiPrinter } from '@mdi/js';
 import Loading from '../../Loading.vue';
 import ComponnetTitle from '../ComponnetTitle.vue';
 import { format, parseISO } from 'date-fns';
+import * as XLSX from 'xlsx';
 
 export default {
     name: 'Datas',
@@ -113,6 +114,14 @@ export default {
                 this.isLoading = false;
             }
         },
+
+        //Xuất file excel
+        exportToExcel() {
+            const workbook = XLSX.utils.book_new();
+            const worksheet = XLSX.utils.json_to_sheet(this.rows);
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Feedback');
+            XLSX.writeFile(workbook, 'DonViBauCu.xlsx');
+        }
     }
 };
 </script>

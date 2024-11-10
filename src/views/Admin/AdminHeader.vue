@@ -1,6 +1,6 @@
 <!-- AdminHeader.vue -->
 <template>
-  <div class="vw-100 mt-5">
+  <div class="vw-100 mt-12">
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
       <div class="container-fluid">
         <a class="btn btn-outline-primary" data-mdb-ripple-init data-mdb-ripple-color="dark" 

@@ -5,6 +5,23 @@
         <!--Phần nội dung tiêu đề chính-->
        <ComponnetTitle :ComponnetName="ComponnetName" />
         
+        <!-- Thêm phần cuốn lịch -->
+        <div class="d-flex justify-content-end mb-3">
+            <Flatpickr
+                v-model="presentTime"
+                :config="{
+                    dateFormat: 'Y-m-d H:i:s',
+                    enableTime: true,
+                    time_24hr: true,
+                    enableSeconds: true,
+                    CSSAnimation:true,
+                    
+                }"
+                @on-change="onDateTimeChanged"
+                class="border border-5 border-dark"
+            />
+        </div>
+
         <!--Phần nội dung bảng-->
         <vgt-table
             :columns="columns"
@@ -44,6 +61,8 @@ import { VueGoodTable as VgtTable } from 'vue-good-table-next';
 import 'vue-good-table-next/dist/vue-good-table-next.css';
 import api from '@/services/api.service';
 import shared from '@/services/shared.service';
+import Flatpickr from 'vue-flatpickr-component';
+import 'flatpickr/dist/flatpickr.css';
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiPrinter } from '@mdi/js';
 import Loading from '../../Loading.vue';
@@ -57,14 +76,26 @@ export default {
         VgtTable,
         SvgIcon,
         Loading,
-        ComponnetTitle
+        ComponnetTitle,
+        Flatpickr,
     },
     props: {
         ComponnetName: {type: String,default: 'Datas'},
+        ngayBatDauDuocNhan: {type: String, default: ''},
     },
     data() {
         return {
             columns: [
+                {
+                    label: 'Mã phiếu bầu',
+                    field: 'iD_Phieu',
+                    type: 'string',
+                },
+                {
+                    label: 'Giá trị phiếu',
+                    field: 'giaTriPhieuBau',
+                    type: 'number',
+                },
                 {
                     label: 'Thời điểm',
                     field: 'thoiDiem',
@@ -74,13 +105,13 @@ export default {
                     },
                 },
                 {
-                    label: 'Địa chỉ IP',
-                    field: 'diaChiIP',
+                    label: 'Mã người dùng',
+                    field: 'iD_user',
                     type: 'string',
                 },
                 {
-                    label: 'Tài khoản',
-                    field: 'taiKhoan',
+                    label: 'Họ tên',
+                    field: 'hoTen',
                     type: 'string',
                 },
             ],
@@ -92,17 +123,36 @@ export default {
             isLoading: false,
             selected: null,
             showDetailModal: false,
+            presentTime: this.$route.query.ngayBD || shared.currentDateTime(), // Ngày giờ hiện tại
         };
+    },
+    watch: {
+        '$route.query.ngayBD': {
+            immediate: true,
+            handler(newVal) {
+                if (newVal) {
+                    this.presentTime = newVal;
+                    this.fetchDatas();
+                }
+            }
+        }
     },
     async created() {
         await this.fetchDatas();
+
     },
     methods: {
+        //Chọn ngày giờ
+        onDateTimeChanged(selectedDates, dateStr, instance) {
+            this.presentTime = dateStr;
+            this.fetchDatas();
+        },
         //Tải dữ liệu từ server
         async fetchDatas() {
             this.isLoading = true;
             try {
-                const res = await api.get(import.meta.env.VITE_VOTER_LOGIN_HISTORY_LIST_API);
+                console.log('path: ',import.meta.env.VITE_GetDetailsAboutEncryptedVotesBasedOnElectionDate_API + this.presentTime);
+                const res = await api.get(import.meta.env.VITE_GetDetailsAboutEncryptedVotesBasedOnElectionDate_API + this.presentTime);
                 if (res.status === 200) {
                     this.rows = res.data.data;
                 } else if (res.status === 401) {
@@ -120,7 +170,7 @@ export default {
             const workbook = XLSX.utils.book_new();
             const worksheet = XLSX.utils.json_to_sheet(this.rows);
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Feedback');
-            XLSX.writeFile(workbook, 'DonViBauCu.xlsx');
+            XLSX.writeFile(workbook, 'DSphieuBauMaHoa.xlsx');
         }
     }
 };

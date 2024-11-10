@@ -4,6 +4,9 @@
 
         <!--Phần nội dung tiêu đề chính-->
        <ComponnetTitle :ComponnetName="ComponnetName" />
+
+       <!-- Thêm component YearSelector -->
+      <YearSelector :selectedYear="YearSelected" @yearSelected="onYearSelected" />
         
         <!--Phần nội dung bảng-->
         <vgt-table
@@ -49,6 +52,7 @@ import { mdiPrinter } from '@mdi/js';
 import Loading from '../../Loading.vue';
 import ComponnetTitle from '../ComponnetTitle.vue';
 import { format, parseISO } from 'date-fns';
+import YearSelector from '@/components/common/yearSelector.vue';
 import * as XLSX from 'xlsx';
 
 export default {
@@ -57,7 +61,8 @@ export default {
         VgtTable,
         SvgIcon,
         Loading,
-        ComponnetTitle
+        ComponnetTitle,
+        YearSelector
     },
     props: {
         ComponnetName: {type: String,default: 'Datas'},
@@ -65,6 +70,16 @@ export default {
     data() {
         return {
             columns: [
+                {
+                    label: 'Mã phiếu bầu',
+                    field: 'iD_Phieu',
+                    type: 'string',
+                },
+                {
+                    label: 'Giá trị phiếu',
+                    field: 'giaTriPhieuBau',
+                    type: 'number',
+                },
                 {
                     label: 'Thời điểm',
                     field: 'thoiDiem',
@@ -74,13 +89,13 @@ export default {
                     },
                 },
                 {
-                    label: 'Địa chỉ IP',
-                    field: 'diaChiIP',
+                    label: 'Mã người dùng',
+                    field: 'iD_user',
                     type: 'string',
                 },
                 {
-                    label: 'Tài khoản',
-                    field: 'taiKhoan',
+                    label: 'Họ tên',
+                    field: 'hoTen',
                     type: 'string',
                 },
             ],
@@ -92,17 +107,24 @@ export default {
             isLoading: false,
             selected: null,
             showDetailModal: false,
+            YearSelected: new Date().getFullYear(), // Năm được chọn
         };
     },
     async created() {
         await this.fetchDatas();
     },
     methods: {
+        //Chọn năm
+        onYearSelected(year) {
+            this.YearSelected = year;
+            this.fetchDatas();
+        },
         //Tải dữ liệu từ server
         async fetchDatas() {
             this.isLoading = true;
             try {
-                const res = await api.get(import.meta.env.VITE_VOTER_LOGIN_HISTORY_LIST_API);
+                console.log(import.meta.env.VITE_GetDetailedInformationAboutEncryptedVotesBasedOnElectionYear_API + this.YearSelected);
+                const res = await api.get(import.meta.env.VITE_GetDetailedInformationAboutEncryptedVotesBasedOnElectionYear_API + this.YearSelected);
                 if (res.status === 200) {
                     this.rows = res.data.data;
                 } else if (res.status === 401) {
@@ -120,7 +142,7 @@ export default {
             const workbook = XLSX.utils.book_new();
             const worksheet = XLSX.utils.json_to_sheet(this.rows);
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Feedback');
-            XLSX.writeFile(workbook, 'DonViBauCu.xlsx');
+            XLSX.writeFile(workbook, 'DSphieuBauMaHoa.xlsx');
         }
     }
 };
