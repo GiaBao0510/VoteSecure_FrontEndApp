@@ -251,7 +251,7 @@
           <div class="card shadow-sm overflow-scroll" style="max-height: 90vh;">
             <div class="card-body">
               <div v-if="mucHienThi === 0">
-                <p>null 0</p>
+                <statistical :ComponnetName="'Thống kê'"/>
               </div>
                 <!-- >>>>>>>>>>>>>Phần này dành cho kỳ bầu cử <<<<<<<<<<<<<<<<< -->
               <div v-if="mucHienThi === 69">
@@ -326,10 +326,10 @@
                 <voters :ComponnetName="'Danh sách cử tri'"/>
               </div>
               <div v-if="mucHienThi === 72">
-                <votersLoginHistory :ComponnetName="'Danh sách ứng cử viên'"/>
+                <candidates :ComponnetName="'Danh sách ứng cử viên'"/>
               </div>
               <div v-if="mucHienThi === 73">
-                <candidatesLoginHistory :ComponnetName="'Danh sách cán bộ'"/>
+                <cadres :ComponnetName="'Danh sách cán bộ'"/>
               </div>
                   <!------------------------------------->
               
@@ -355,6 +355,9 @@
   import feedbackCadre from './Feedback/getCadreFeedbackList.vue';
   import feedbackCandidate from './Feedback/getCandidateFeedbackList.vue';
   import voters from './voters/voters.vue';
+  import statistical from './statistical/statistical.vue';
+  import candidates from './candidates/candidates.vue';
+  import cadres from './cadres/cadres.vue';
   import boards from './boards/boards.vue'; 
   import province from './provinces/provinces.vue';
   import district from './districts/districts.vue';
@@ -383,7 +386,8 @@ export default {
     feedbackVoter, feedbackCadre, feedbackCandidate,
     GetDetailedEncryptedVotesBasedOnElectionYear, EncryptedVotesBasedOnElectionDate,
     GetListOfDecodedVotesBasedOnElectionDate,
-    voters
+    voters, candidates, cadres,
+    statistical
   },
   data() {
     return {
@@ -413,8 +417,8 @@ export default {
         { title: 'Phản hồi', icon: 'bi bi-bookmark' },        //9
         { title: 'Phiếu bầu', icon: 'bi bi-bookmark' },    //10
         { title: 'Người dùng', icon: 'bi bi-bookmark' },
-        { title: 'Sách đã mượn', icon: 'bi bi-bookmark' },
-        { title: 'Sách đã mượn', icon: 'bi bi-bookmark' },
+        { title: 'Công tác cán bộ', icon: 'bi bi-bookmark' },
+        //{ title: 'Sách đã mượn', icon: 'bi bi-bookmark' },
       ]
     }
   },
@@ -495,4 +499,4 @@ export default {
   
 <style scoped>
   @import url('../../assets/ThuVien/home.css');
-</style>
+</style> 

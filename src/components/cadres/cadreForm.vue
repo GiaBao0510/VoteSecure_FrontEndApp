@@ -5,6 +5,7 @@
     import SvgIcon from '@jamescoyle/vue-icon';
     import { mdiPlus } from '@mdi/js';
     import { mdiDeleteCircle } from '@mdi/js';
+    import { format, parse, isValid } from 'date-fns';
 
     export default{
         components:{
@@ -16,7 +17,7 @@
         emits:['submit:entity','delete:entity','edit:entity'],
         data(){
             const entitySchema = yup.object().shape({
-                iD_CuTri: yup.string(),
+                iD_CanBo: yup.string(),
                 iD_user: yup.string(),
                 hoTen: yup.string().required('Họ tên không được để trống'),
                 gioiTinh: yup.string().required('Giới tính không được để trống'),
@@ -29,13 +30,13 @@
                 email: yup.string()
                     .required('Email không được để trống')
                     .email('Email không hợp lệ'),
-                taiKhoan: yup.string(),
                 diaChiLienLac: yup.string().required('Địa chỉ không được để trống'),
                 hinhAnh: yup.string(),
                 publicID: yup.string(),
-                iD_ChucVu: yup.number(),
-                iD_DanToc: yup.number(),
+                iD_DanToc: yup.number().required('Mã dân tộc không được để trống'),
                 roleID: yup.number(),
+                ghiChu: yup.string().required('Phần giới thiệu không được để trống'),
+                ngayCongTac: yup.string(),
                 fileAnh: yup
                     .mixed()
                     .test('fileSize', 'File size is too large', (value) => {
@@ -46,6 +47,17 @@
                         if (!value) return true; // Skip if no file
                         return ['image/jpeg', 'image/png', 'image/gif'].includes(value.type);
                     }),
+                //Chỉ xuất hiện khi thêm    
+                ID_TrinhDo: yup.number().when([], {
+                    is: () => this.isAddMode,
+                    then: () => yup.number().required('Mã chức vụ không được để trống'),
+                    otherwise: () => yup.number().nullable()
+                }),
+                matKhau: yup.string().when([], {
+                    is: () => this.isAddMode,
+                    then: () => yup.string().required('Mật khẩu không được để trống'),
+                    otherwise: () => yup.string().nullable()
+                })
             });
             return {
                 entityLocal:{ ...this.entity},
@@ -62,14 +74,17 @@
             }
         },
         computed:{
+            isAddMode() {
+                return !this.entityLocal.iD_CanBo;
+            },
             //Kiểm tra điều kiện trước khi hiển thị nút xóa
             showDeleteButton(){
-                let check = this.entityLocal.iD_CuTri !== undefined ;
-                console.log('>>> Ma cu tri: ',this.entityLocal.iD_CuTri);
-                console.log('>>> Check: ',check);
-                return check;
+                return !this.isAddMode;
             },
-            
+            //Kiểm tra điều kiện trước khi hiển thị nút sửa
+            uniqueId() {
+                return `candidate-form-${Date.now()}`;
+            }
         },
         methods:{
             handleFileUpload(event) {
@@ -85,20 +100,43 @@
                 this.entityLocal.fileAnh = null;
                 this.previewImage = null;
             },
+
+            formatDateForInput(date) {
+                if (!date) return '';
+                try {
+                    if (typeof date === 'string' && date.includes('/')) {
+                        const parsedDate = parse(date, 'dd/MM/yyyy HH:mm:ss', new Date());
+                        if (isValid(parsedDate)) {
+                            return format(parsedDate, "yyyy-MM-dd HH:mm:ss");
+                        }
+                    }
+                    return date;
+                } catch (error) {
+                    console.error('Error formatting date:', error);
+                    return '';
+                }
+            },
  
             //Thêm 
             submit(){
                 // Create a clean copy of the data
+                console.log("ngay sinh gui di: ",this.entityLocal.ngaySinh);
+
                 const submitData = {
-                    fileAnh: this.entityLocal.fileAnh,
+                    ...this.entityLocal,
                     hoTen: this.entityLocal.hoTen?.trim(),
                     gioiTinh: this.entityLocal.gioiTinh,
                     ngaySinh: this.entityLocal.ngaySinh,
                     sdt: this.entityLocal.sdt?.trim(),
                     email: this.entityLocal.email?.trim(),
                     diaChiLienLac: this.entityLocal.diaChiLienLac?.trim(),
-                    iD_ChucVu: this.entityLocal.iD_ChucVu,
-                    iD_DanToc: this.entityLocal.iD_DanToc
+                    ID_TrinhDo: this.entityLocal.ID_TrinhDo,
+                    iD_DanToc: this.entityLocal.iD_DanToc,
+                    ghiChu: this.entityLocal.ghiChu?.trim(),
+                    ngayCongTac: this.entityLocal.ngayCongTac,
+                    taiKhoan: this.entityLocal.sdt?.trim(),
+                    matKhau: this.entityLocal.matKhau,
+                    fileAnh: this.entityLocal.fileAnh,
                 };
 
                 this.$emit('submit:entity', submitData);
@@ -106,12 +144,12 @@
 
             //Xóa 
             deleteEntity(){
-                this.$emit('delete:entity', this.entityLocal.iD_CuTri);
+                this.$emit('delete:entity', this.entityLocal.iD_CanBo);
             },
 
             //Sửa
             editEntity(){
-                this.$emit('edit:entity', this.entityLocal.iD_CuTri);
+                this.$emit('edit:entity', this.entityLocal.iD_CanBo);
             },
 
             //Sửa lý hiển thị thông tin ngày sinh
@@ -142,14 +180,55 @@
             formatDateForInput(dateString) {
                 if (!dateString) return '';
                 try {
-                    // Convert DD-MM-YYYY to YYYY-MM-DD
-                    const [day, month, year] = dateString.split('-');
-                    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                    // If the date is in dd/MM/yyyy HH:mm:ss format
+                    if (dateString.includes('/')) {
+                        const parsedDate = parse(dateString, 'dd/MM/yyyy HH:mm:ss', new Date());
+                        if (isValid(parsedDate)) {
+                            return format(parsedDate, "yyyy-MM-dd'T'HH:mm:ss");
+                        }
+                    }
+                    // If the date is already in ISO format
+                    const date = new Date(dateString);
+                    if (isValid(date)) {
+                        return format(date, "yyyy-MM-dd'T'HH:mm:ss");
+                    }
+                    return '';
                 } catch (error) {
                     console.error('Error formatting date:', error);
-                    return dateString;
+                    return '';
                 }
             },
+
+            //Xử lý thay đổi ngày giờ
+            handleDateTimeChange(event, handleChange, fieldName) {
+                const value = event.target.value;
+                
+                if (!value) {
+                    this.entityLocal[fieldName] = null;
+                    handleChange(null);
+                    return;
+                }
+
+                try {
+                    const date = new Date(value);
+                    if (isValid(date)) {
+                        // Format directly to API format (yyyy-MM-dd HH:mm:ss)
+                        const formattedDate = format(date, 'yyyy-MM-dd HH:mm:ss');
+                        
+                        // Store the formatted date
+                        this.entityLocal[fieldName] = formattedDate;
+                        
+                        // Update the form
+                        handleChange(formattedDate);
+                        
+                        console.log('Formatted date:', formattedDate); // For debugging
+                    }
+                } catch (error) {
+                    console.error('Error handling date change:', error);
+                }
+            }
+
+
         },
         // Clean up preview URL when component is destroyed
         beforeUnmount() {
@@ -164,15 +243,17 @@
     <div class="container py-5">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Thông tin cử tri</h4>
+                <h4 class="mb-0">
+                    {{ isAddMode ? 'Thêm cán bộ mới' : 'Thông tin cán bộ' }}
+                </h4>
             </div>
             <div class="card-body">
                 <Form @submit="submit" :validation-schema="entitySchema" v-slot="{errors}" method="post">
                     <div class="row g-4">
                         <!-- ID fields in a row if they exist -->
-                        <div class="col-md-6" v-if="entityLocal.iD_CuTri != null">
-                            <label for="iD_CuTri" class="form-label">ID Cử tri</label>
-                            <Field name="iD_CuTri" type="text" class="form-control-plaintext" v-model="entityLocal.iD_CuTri" disabled />
+                        <div class="col-md-6" v-if="entityLocal.iD_CanBo != null">
+                            <label for="iD_CanBo" class="form-label">ID Cử tri</label>
+                            <Field name="iD_CanBo" type="text" class="form-control-plaintext" v-model="entityLocal.iD_CanBo" disabled />
                         </div>
                         <div class="col-md-6" v-if="entityLocal.iD_user != null">
                             <label for="iD_user" class="form-label">ID người dùng</label>
@@ -197,9 +278,9 @@
                                         class="form-check-input" 
                                         v-model="entityLocal.gioiTinh" 
                                         value="1"
-                                        id="genderMale"
+                                        :id="`genderMale-${uniqueId}`"
                                     />
-                                    <label class="form-check-label" for="genderMale">Nam</label>
+                                    <label class="form-check-label" :for="`genderMale-${uniqueId}`">Nam</label>
                                 </div>
                                 <div class="form-check">
                                     <Field 
@@ -208,9 +289,9 @@
                                         class="form-check-input" 
                                         v-model="entityLocal.gioiTinh" 
                                         value="0"
-                                        id="genderFemale"
+                                        :id="`genderFemale-${uniqueId}`"
                                     />
-                                    <label class="form-check-label" for="genderFemale">Nữ</label>
+                                    <label class="form-check-label" :for="`genderFemale-${uniqueId}`">Nữ</label>
                                 </div>
                             </div>
                             <ErrorMessage name="gioiTinh" class="text-danger small"/>
@@ -222,10 +303,16 @@
                                 name="ngaySinh" 
                                 type="date" 
                                 class="form-control" 
-                                :value="entityLocal.ngaySinh"
+                                :value="formatDateForInput(entityLocal.ngaySinh)"
                                 @input="handleDateChange"
                             />
                             <ErrorMessage name="ngaySinh" class="text-danger small"/>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="ghiChu" class="form-label fw-bold">Ghi chú</label>
+                            <Field name="ghiChu" type="text" class="form-control" v-model="entityLocal.ghiChu" />
+                            <ErrorMessage name="ghiChu" class="text-danger small"/>
                         </div>
 
                         <!-- Contact Information -->
@@ -247,52 +334,83 @@
                             <ErrorMessage name="diaChiLienLac" class="text-danger small"/>
                         </div>
 
+                        <div class="col-md-6">
+                            <label for="ngayCongTac" class="form-label fw-bold">
+                                Thời điểm công tác
+                            </label>
+                            <Field name="ngayCongTac" v-slot="{  field, handleChange }">
+                                <input 
+                                    type="datetime-local" 
+                                    class="form-control"
+                                    :value="formatDateForInput(entityLocal.ngayCongTac)"
+                                    @input="handleDateTimeChange($event, handleChange, 'ngayCongTac')"
+                                    step="1"
+                                    required
+                                />
+                            </Field>
+                            <ErrorMessage name="ngayCongTac" class="text-danger small"/>
+                        </div>
+
                         <!-- Additional Information -->
                         <div class="col-md-6">
-                            <label for="iD_DanToc" class="form-label fw-bold">Dân tộc</label>
+                            <label for="iD_DanToc" class="form-label fw-bold">Mã Dân tộc</label>
                             <Field name="iD_DanToc" type="text" class="form-control" v-model="entityLocal.iD_DanToc" />
                             <ErrorMessage name="iD_DanToc" class="text-danger small"/>
                         </div>
 
-                        <div class="col-md-6">
-                            <label for="iD_ChucVu" class="form-label fw-bold">Chức vụ</label>
-                            <Field name="iD_ChucVu" type="text" class="form-control" v-model="entityLocal.iD_ChucVu" />
-                            <ErrorMessage name="iD_ChucVu" class="text-danger small"/>
-                        </div>
+                        <template v-if="isAddMode">
 
-                        <!-- Image Upload -->
-                        <div class="col-12">
-                            <label for="fileAnh" class="form-label fw-bold">Hình ảnh</label>
-                            <div class="input-group">
-                                <input
-                                    type="file"
-                                    class="form-control"
-                                    id="fileAnh"
-                                    accept="image/*"
-                                    @change="handleFileUpload"
-                                    :class="{ 'is-invalid': errors.fileAnh }"
-                                />
-                                <button 
-                                    v-if="entityLocal.fileAnh"
-                                    type="button" 
-                                    class="btn btn-outline-secondary"
-                                    @click="clearFileInput"
-                                >
-                                    <i class="bi bi-x-lg"></i> Xóa
-                                </button>
+                            <div class="col-md-6">
+                                <label for="ID_TrinhDo" class="form-label fw-bold">Mã trình độ học vấn hiện tại</label>
+                                <Field name="ID_TrinhDo" type="text" class="form-control" v-model="entityLocal.ID_TrinhDo" />
+                                <ErrorMessage name="ID_TrinhDo" class="text-danger small"/>
                             </div>
-                            <ErrorMessage name="fileAnh" class="text-danger small"/>
-                            
-                            <!-- Image Preview -->
-                            <div v-if="previewImage" class="mt-2">
-                                <img 
+
+                            <div class="col-md-6">
+                                <label for="matKhau" class="form-label fw-bold">Mật khẩu</label>
+                                <Field 
+                                    name="matKhau" 
+                                    type="password" 
+                                    class="form-control" 
+                                    v-model="entityLocal.matKhau"
+                                />
+                                <ErrorMessage name="matKhau" class="text-danger small"/>
+                            </div>
+
+                            <!-- Image Upload -->
+                            <div class="col-12">
+                                <label for="fileAnh" class="form-label fw-bold">Hình ảnh</label>
+                                <div class="input-group">
+                                    <input
+                                        type="file"
+                                        class="form-control"
+                                        id="fileAnh"
+                                        accept="image/*"
+                                        @change="handleFileUpload"
+                                        :class="{ 'is-invalid': errors.fileAnh }"
+                                    />
+                                    <button 
+                                        v-if="entityLocal.fileAnh"
+                                        type="button" 
+                                        class="btn btn-outline-secondary"
+                                        @click="clearFileInput"
+                                    >
+                                    <i class="bi bi-x-lg"></i> Xóa
+                                    </button>
+                                </div>
+                                <ErrorMessage name="fileAnh" class="text-danger small"/>
+                                
+                                <!-- Image Preview -->
+                                <div v-if="previewImage" class="mt-2">
+                                    <img 
                                     :src="previewImage" 
                                     alt="Preview" 
                                     class="img-thumbnail"
                                     style="max-height: 200px"
-                                />
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        </template>
                     </div>
 
                     <!-- Action Buttons -->
@@ -317,4 +435,13 @@
 
 <style scoped>
  @import url('../../assets/ThuVien/voters/formVoter.css');
+ .card-body {
+  max-height: calc(90vh - 100px);
+  overflow-y: auto;
+}
+
+.form-check-input:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
 </style>

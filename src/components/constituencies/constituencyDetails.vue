@@ -79,7 +79,6 @@
                     });
 
                     if (result.isConfirmed) {
-                       
                         const response = await api.delete(`${import.meta.env.VITE_CONSTITUENCY_API}/${iD_DonViBauCu}`);
                         if (response.status === 200) {
                             Swal.fire({

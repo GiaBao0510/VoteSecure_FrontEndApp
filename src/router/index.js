@@ -36,6 +36,7 @@ const routes =[
         {
           path: 'statistical',
           name: 'Statistical',
+          component: () => import("@/views/Admin/statistical/statistical.vue"),
         },
 
         //Kỳ bầu cử
@@ -155,6 +156,18 @@ const routes =[
           path: 'Voters',
           name: 'voters',
           component: () => import("@/views/Admin/voters/voters.vue"),
+        },
+        //Danh sách ứng cử viên
+        {
+          path: 'Candidates',
+          name: 'candidates',
+          component: () => import("@/views/Admin/candidates/candidates.vue"),
+        },
+        //Danh sách cán bộ
+        {
+          path: 'Cadres',
+          name: 'cadres',
+          component: () => import("@/views/Admin/cadres/cadres.vue"),
         },
       ]
     }

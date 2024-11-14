@@ -1,0 +1,68 @@
+.controls-container {
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .export-btn {
+    width: 100%;
+  }
+  
+  @media (max-width: 600px) {
+    .v-list-item {
+      flex-direction: column;
+    }
+    
+    .v-list-item__prepend {
+      margin-bottom: 16px;
+    }
+  }
+  
+  .image-container {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
+  }
+  
+  .v-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* Add smooth transition for image loading */
+  .v-img__img {
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .v-img__img--preload {
+    filter: blur(2px);
+  }
+  
+  .add-btn, .export-btn {
+    width: 100%;
+  }
+  
+  @media (max-width: 960px) {
+    .add-btn {
+      margin-bottom: 8px;
+    }
+  }
+  
+  /* Add these styles */
+  .controls-container {
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Adjust spacing for mobile */
+  @media (max-width: 960px) {
+    .v-row {
+      margin: 0 -4px;
+    }
+    .px-1 {
+      padding: 0 4px;
+    }
+  }

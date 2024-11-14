@@ -35,7 +35,7 @@
                           :block="true"
                           :height="40"
                       >
-                          Thêm Cử Tri
+                          Thêm cán bộ
                       </v-btn>
                     </v-col>
 
@@ -58,11 +58,11 @@
         </v-card>
       </div>
 
-        <!--  Modal thêm cử tri-->
+        <!--  Modal thêm cán bộ-->
         <v-dialog v-model="showAddForm" max-width="800px">
           <v-card>
             <v-card-title class="text-h5 bg-primary text-white pa-4">
-              <span>Thêm Cử Tri Mới</span>
+              <span>Thêm cán bộ Mới</span>
               <v-spacer></v-spacer>
               <v-btn icon @click="closeAddModal">
                 <v-icon>mdi-close</v-icon>
@@ -92,7 +92,7 @@
             class="mb-2"
             @click="onRowClick({ row: item })"
           >
-            <!-- Avatar của cử tri -->
+            <!-- Avatar của cán bộ -->
             <template v-slot:prepend>
                 <v-avatar size="60" class="image-container">
                 <v-img
@@ -128,15 +128,16 @@
             <v-list-item-subtitle>
               <v-row dense>
                 <v-col cols="12" sm="6">
-                  <div><strong>Mã cử tri:</strong> {{ item.iD_CuTri }}</div>
+                  <div><strong>Mã cán bộ:</strong> {{ item.iD_CanBo }}</div>
                   <div><strong>Giới tính:</strong> {{ item.gioiTinh === '1' ? 'Nam' : 'Nữ' }}</div>
                   <div><strong>Ngày sinh:</strong> {{ item.ngaySinh }}</div>
+                  <div><strong>Ngày công tác:</strong> {{ item.ngayCongTac }}</div>
                   <div><strong>Địa chỉ:</strong> {{ item.diaChiLienLac }}</div>
                 </v-col>
                 <v-col cols="12" sm="6">
                   <div><strong>Số điện thoại:</strong> {{ item.sdt }}</div>
                   <div><strong>Email:</strong> {{ item.email }}</div>
-                  <div><strong>Mã chức vụ:</strong> {{ item.iD_ChucVu }}</div>
+                  <div><strong>Ghi chú:</strong> {{ item.ghiChu }}</div>
                   <div><strong>Mã dân tộc:</strong> {{ item.iD_DanToc }}</div>
                 </v-col>
               </v-row>
@@ -183,7 +184,7 @@
       <v-dialog v-model="showAddForm" max-width="800px">
         <v-card>
           <v-card-title>
-            <span class="text-h5">Thêm cử tri mới</span>
+            <span class="text-h5">Thêm cán bộ mới</span>
           </v-card-title>
           <v-card-text>
             <AddForm 
@@ -198,9 +199,9 @@
 
 <script>
 import api from '@/services/api.service';
-import AddForm from '../../../components/voters/AddVoter.vue';
+import AddForm from '../../../components/cadres/AddCadre.vue';
 import Loading from '../../Loading.vue';
-import DetailedForm from '../../../components/voters/voterDetails.vue';
+import DetailedForm from '../../../components/cadres/cadreDetails.vue';
 import ComponnetTitle from '../ComponnetTitle.vue';
 import * as XLSX from 'xlsx';
 
@@ -235,7 +236,7 @@ export default {
         const searchLower = this.search.toLowerCase();
         items = items.filter(item => 
           item.hoTen.toLowerCase().includes(searchLower) ||
-          item.iD_CuTri.toLowerCase().includes(searchLower) ||
+          item.iD_CanBo.toLowerCase().includes(searchLower) ||
           item.email.toLowerCase().includes(searchLower) ||
           item.sdt.includes(searchLower)
         );
@@ -258,7 +259,7 @@ export default {
     async fetchDatas() {
       this.isLoading = true;
       try {
-        const res = await api.get(import.meta.env.VITE_GET_ALL_VOTERS_API);
+        const res = await api.get(import.meta.env.VITE_GET_ALL_CADRES_API);
         if (res.status === 200) {
           this.rows = res.data.data;
         } else if (res.status === 401) {
@@ -272,7 +273,7 @@ export default {
     },
 
     onRowClick({ row }) {
-      this.selected = row;
+      this.selected = { ...row };
       this.showDetailModal = true;
     },
 
@@ -312,7 +313,7 @@ export default {
     //Xuất file Excel
     exportToExcel() {
       const dataToExport = this.rows.map(item => ({
-        'Mã cử tri': item.iD_CuTri,
+        'Mã cán bộ': item.iD_CanBo,
         'Họ tên': item.hoTen,
         'Giới tính': item.gioiTinh === '1' ? 'Nam' : 'Nữ',
         'Ngày sinh': item.ngaySinh,
@@ -320,7 +321,9 @@ export default {
         'Số điện thoại': item.sdt,
         'Email': item.email,
         'Mã chức vụ': item.iD_ChucVu,
-        'Mã dân tộc': item.iD_DanToc
+        'Mã dân tộc': item.iD_DanToc,
+        'Ngày công tác': item.ngayCongTac,
+        'Ghi Chú': item.ghiChu, 
       }));
 
       const workbook = XLSX.utils.book_new();
@@ -338,72 +341,5 @@ export default {
 </script>
 
 <style scoped>
-.controls-container {
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.export-btn {
-  width: 100%;
-}
-
-@media (max-width: 600px) {
-  .v-list-item {
-    flex-direction: column;
-  }
-  
-  .v-list-item__prepend {
-    margin-bottom: 16px;
-  }
-}
-
-.image-container {
-  position: relative;
-  width: 60px;
-  height: 60px;
-  overflow: hidden;
-}
-
-.v-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Add smooth transition for image loading */
-.v-img__img {
-  transition: opacity 0.3s ease-in-out;
-}
-
-.v-img__img--preload {
-  filter: blur(2px);
-}
-
-.add-btn, .export-btn {
-  width: 100%;
-}
-
-@media (max-width: 960px) {
-  .add-btn {
-    margin-bottom: 8px;
-  }
-}
-
-/* Add these styles */
-.controls-container {
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Adjust spacing for mobile */
-@media (max-width: 960px) {
-  .v-row {
-    margin: 0 -4px;
-  }
-  .px-1 {
-    padding: 0 4px;
-  }
-}
+    @import url('@/assets/ThuVien/nguoiDung.css');
 </style>

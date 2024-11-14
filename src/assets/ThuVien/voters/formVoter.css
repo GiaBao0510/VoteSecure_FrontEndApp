@@ -1,0 +1,77 @@
+.card {
+    border: none;
+    border-radius: 10px;
+    margin: 0;
+    height: 100%;
+}
+
+.card-body {
+padding: 1.25rem;
+overflow-y: auto;
+max-height: calc(90vh - 120px); /* Adjust based on your header height */
+}
+
+.container {
+max-width: 100%;
+padding: 15px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.img-thumbnail {
+    border-radius: 8px;
+    max-width: 100%;
+    height: auto;
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+.card-body {
+    padding: 1rem;
+}
+
+.btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.d-flex.gap-2.justify-content-end {
+    flex-direction: column;
+}
+}
+
+/* Improve form field spacing */
+.row.g-4 > * {
+margin-bottom: 1rem;
+}
+
+/* Make inputs more touch-friendly on mobile */
+@media (max-width: 768px) {
+.form-control, .btn {
+    min-height: 44px;
+}
+}

@@ -1,5 +1,5 @@
 <script>
-    import EntityForm from './voterForm.vue';
+    import EntityForm from './candidateForm.vue';
     import Swal from "sweetalert2";
     import api from '../../services/api.service';
  
@@ -28,18 +28,22 @@
                 try{
                     console.log(' --- Đầu vào: ',data);
                    
+                   let ngaySinh = data.ngaySinh.split('T')[0];
+                   console.log('--- ngay sinh: ',ngaySinh);
                     // Định dạng lại ngày sinh
-                    let [date, month, year] = data.ngaySinh.split('-');
-                    let swapDate = `${year}-${month}-${date}`;
-                    const response = await api.put(`${import.meta.env.VITE_VOTER_API}/${this.entity.iD_CuTri}`,{
+                    
+                    const response = await api.put(`${import.meta.env.VITE_CANDIDATE_API}/${this.entity.iD_ucv}`,{
                         HoTen: data.hoTen,
                         GioiTinh: data.gioiTinh,
-                        NgaySinh: swapDate,
+                        NgaySinh: ngaySinh,
                         DiaChiLienLac: data.diaChiLienLac,
                         SDT: data.sdt,
                         Email: data.email,
                         ID_DanToc: data.iD_DanToc,
-                        RoleID: 8
+                        TrangThai: data.trangThai,
+                        GioiThieu: data.gioiThieu,
+                        ID_ChucVu: data.iD_ChucVu,
+                        RoleID: 2
                     });
                     console.log(">>> status: " + response.status);
                     if(response.status === 200){
@@ -80,10 +84,10 @@
             },
 
             //Xóa
-            async Delete(iD_CuTri){
+            async Delete(iD_ucv){
                 try{
-                    console.log("Xóa: ",iD_CuTri);
-                    console.log("Api: ",`${import.meta.env.VITE_VOTER_API}/${iD_CuTri}`);
+                    console.log("Xóa: ",iD_ucv);
+                    console.log("Api: ",`${import.meta.env.VITE_CANDIDATE_API}/${iD_ucv}`);
                     const result = await Swal.fire({
                         title: 'Bạn có chắc chắn muốn xóa?',
                         text: 'Hành động này không thể hoàn tác!',
@@ -95,7 +99,7 @@
 
                     if (result.isConfirmed) {
                        
-                        const response = await api.delete(`${import.meta.env.VITE_VOTER_API}/${iD_CuTri}`);
+                        const response = await api.delete(`${import.meta.env.VITE_CANDIDATE_API}/${iD_ucv}`);
                         if (response.status === 200) {
                             Swal.fire({
                                 icon: 'success',
@@ -144,7 +148,7 @@
 
                     // Call separate API endpoint for image update
                     const response = await api.put(
-                    `${import.meta.env.VITE_VOTER_API}/update-image/${this.entityLocal.iD_CuTri}`,
+                    `${import.meta.env.VITE_CANDIDATE_API}/update-image/${this.entityLocal.iD_ucv}`,
                     formData,
                     {
                         headers: {

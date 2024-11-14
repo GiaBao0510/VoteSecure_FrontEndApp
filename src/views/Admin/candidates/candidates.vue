@@ -35,7 +35,7 @@
                           :block="true"
                           :height="40"
                       >
-                          Thêm Cử Tri
+                          Thêm ứng cử viên
                       </v-btn>
                     </v-col>
 
@@ -128,14 +128,16 @@
             <v-list-item-subtitle>
               <v-row dense>
                 <v-col cols="12" sm="6">
-                  <div><strong>Mã cử tri:</strong> {{ item.iD_CuTri }}</div>
+                  <div><strong>Mã ứng cử viên:</strong> {{ item.iD_ucv }}</div>
                   <div><strong>Giới tính:</strong> {{ item.gioiTinh === '1' ? 'Nam' : 'Nữ' }}</div>
                   <div><strong>Ngày sinh:</strong> {{ item.ngaySinh }}</div>
+                  <div><strong>Trạng thái:</strong> {{ item.trangThai }}</div>
                   <div><strong>Địa chỉ:</strong> {{ item.diaChiLienLac }}</div>
                 </v-col>
                 <v-col cols="12" sm="6">
                   <div><strong>Số điện thoại:</strong> {{ item.sdt }}</div>
                   <div><strong>Email:</strong> {{ item.email }}</div>
+                  <div><strong>Giới thiệu:</strong> {{ item.gioiThieu }}</div>
                   <div><strong>Mã chức vụ:</strong> {{ item.iD_ChucVu }}</div>
                   <div><strong>Mã dân tộc:</strong> {{ item.iD_DanToc }}</div>
                 </v-col>
@@ -198,9 +200,9 @@
 
 <script>
 import api from '@/services/api.service';
-import AddForm from '../../../components/voters/AddVoter.vue';
+import AddForm from '../../../components/candidates/AddCandidate.vue';
 import Loading from '../../Loading.vue';
-import DetailedForm from '../../../components/voters/voterDetails.vue';
+import DetailedForm from '../../../components/candidates/candidateDetails.vue';
 import ComponnetTitle from '../ComponnetTitle.vue';
 import * as XLSX from 'xlsx';
 
@@ -235,7 +237,7 @@ export default {
         const searchLower = this.search.toLowerCase();
         items = items.filter(item => 
           item.hoTen.toLowerCase().includes(searchLower) ||
-          item.iD_CuTri.toLowerCase().includes(searchLower) ||
+          item.iD_ucv.toLowerCase().includes(searchLower) ||
           item.email.toLowerCase().includes(searchLower) ||
           item.sdt.includes(searchLower)
         );
@@ -258,7 +260,7 @@ export default {
     async fetchDatas() {
       this.isLoading = true;
       try {
-        const res = await api.get(import.meta.env.VITE_GET_ALL_VOTERS_API);
+        const res = await api.get(import.meta.env.VITE_GET_ALL_CANDIDATES_API);
         if (res.status === 200) {
           this.rows = res.data.data;
         } else if (res.status === 401) {
@@ -272,7 +274,7 @@ export default {
     },
 
     onRowClick({ row }) {
-      this.selected = row;
+      this.selected = { ...row };
       this.showDetailModal = true;
     },
 
@@ -312,7 +314,7 @@ export default {
     //Xuất file Excel
     exportToExcel() {
       const dataToExport = this.rows.map(item => ({
-        'Mã cử tri': item.iD_CuTri,
+        'Mã ứng cử viên': item.iD_ucv,
         'Họ tên': item.hoTen,
         'Giới tính': item.gioiTinh === '1' ? 'Nam' : 'Nữ',
         'Ngày sinh': item.ngaySinh,
@@ -320,7 +322,9 @@ export default {
         'Số điện thoại': item.sdt,
         'Email': item.email,
         'Mã chức vụ': item.iD_ChucVu,
-        'Mã dân tộc': item.iD_DanToc
+        'Mã dân tộc': item.iD_DanToc,
+        'Trạng thái': item.trangThai,
+        'Giới thiệu': item.gioiThieu, 
       }));
 
       const workbook = XLSX.utils.book_new();
@@ -338,72 +342,5 @@ export default {
 </script>
 
 <style scoped>
-.controls-container {
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.export-btn {
-  width: 100%;
-}
-
-@media (max-width: 600px) {
-  .v-list-item {
-    flex-direction: column;
-  }
-  
-  .v-list-item__prepend {
-    margin-bottom: 16px;
-  }
-}
-
-.image-container {
-  position: relative;
-  width: 60px;
-  height: 60px;
-  overflow: hidden;
-}
-
-.v-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Add smooth transition for image loading */
-.v-img__img {
-  transition: opacity 0.3s ease-in-out;
-}
-
-.v-img__img--preload {
-  filter: blur(2px);
-}
-
-.add-btn, .export-btn {
-  width: 100%;
-}
-
-@media (max-width: 960px) {
-  .add-btn {
-    margin-bottom: 8px;
-  }
-}
-
-/* Add these styles */
-.controls-container {
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Adjust spacing for mobile */
-@media (max-width: 960px) {
-  .v-row {
-    margin: 0 -4px;
-  }
-  .px-1 {
-    padding: 0 4px;
-  }
-}
+  @import url('@/assets/ThuVien/nguoiDung.css');
 </style>
