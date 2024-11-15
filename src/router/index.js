@@ -169,6 +169,12 @@ const routes =[
           name: 'cadres',
           component: () => import("@/views/Admin/cadres/cadres.vue"),
         },
+        //Danh sách chưa tham dự kỳ bầu cử theo đối tượng
+        {
+          path: 'NavigateToElection',
+          name: 'navigateToElection',
+          component: () => import("@/views/Admin/elections/NavigateToElection.vue"),
+        },
       ]
     }
 ];
