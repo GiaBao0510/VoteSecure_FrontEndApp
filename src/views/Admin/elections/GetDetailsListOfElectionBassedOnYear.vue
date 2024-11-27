@@ -183,7 +183,7 @@
                             small
                         >
                             <v-icon>mdi-bullhorn</v-icon>
-                            <span>Công bố kết quả</span>
+                            <span>Kết quả kỳ bầu cử</span>
                         </v-btn>
                     </div>
                 </div>
@@ -207,6 +207,7 @@
       :ngayBD="selectedNgayBD"
       :iD_DonViBauCu="selectedDonViBauCu"
       :iD_Cap="selectCapUngCu"
+      :remainingCapacity="remainingCapacity"
       @refresh="handleNavigateSuccess"
     />
   </template>
@@ -219,6 +220,7 @@
   import YearSelector from '@/components/common/yearSelector.vue';
   import EncryptedBallotList from '../votes/GetDetailedInformationAboutEncryptedVotesBasedOnElectionYear.vue';
   import Swal from "sweetalert2";
+  import ListOfElectionsResultAnnounced from './ListOfElectionsResultAnnounced.vue';
   import NavigateToElection from './NavigateToElection.vue';
 
   export default {
@@ -227,7 +229,8 @@
       ComponnetTitle,
       YearSelector,
       EncryptedBallotList,
-      NavigateToElection
+      NavigateToElection,
+      ListOfElectionsResultAnnounced
     },
     props: {
       ComponnetName: {
@@ -249,7 +252,8 @@
         navigateType: '',
         selectedNgayBD: '',
         selectedDonViBauCu: null,
-        selectCapUngCu: null
+        selectCapUngCu: null,
+        remainingCapacity: 0,
       };
     },
     computed: {
@@ -280,16 +284,19 @@
       await this.fetchDatas();
     },
     methods: {
+
         //Định dạng ngày
       formatDate(date) {
         return format(parseISO(date), 'dd/MM/yyyy HH:mm:ss');
       },
+
       //Chọn năm
       async onYearSelected(year) {
         this.YearSelected = year;
         this.page = 1; // Reset về trang 1
         await this.fetchDatas();
       },
+
       //Lấy dữ liệu từ API
       async fetchDatas() {
         this.isLoading = true;
@@ -363,28 +370,104 @@
 
         //Công bố kết quả
       async AnnounceElectionResult(ngayBD, CongBo){
-          if(CongBo === '1'){
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Lỗi',
-                  text: 'Kết quả đã được công bố',
+          try{
+            if(CongBo === '0'){
+              await Swal.fire({
+                  icon: 'warning',
+                  title: 'Thông báo',
+                  text: 'Kết quả bầu cử chưa được công bố!',
                   confirmButtonText: 'Đóng'
               });
               return;
+            }
+            // Nếu đã công bố, chuyển đến trang kết quả
+            ngayBD = ngayBD.replace('T', ' ');
+            console.log('Xem kết quả bầu cử theo ngayBD:', ngayBD);
+            
+            // Emit event to parent (home.vue)
+            this.$parent.showElectionResults({
+              ngayBD: ngayBD
+            });
+          }catch (error) {
+              console.error('Error viewing election results:', error);
+              console.error('Error response:', error.response);
+              console.error('Error Message:', error.Message);
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Lỗi',
+                  text: 'Không thể xem kết quả bầu cử',
+                  confirmButtonText: 'Đóng'
+              });
           }
       },
 
       //Lấy danh sách các đối tượng chưa tham dự bầy cử
-      showNavigateForm(ngayBD, iD_DonViBauCu, iD_Cap,type) {
-        // Format date if needed
-        ngayBD = ngayBD.replace('T', ' ');
-        
-        // Cập nhật trạng thái
-        this.navigateType = type;
-        this.selectedNgayBD = ngayBD;
-        this.selectedDonViBauCu = iD_DonViBauCu;
-        this.selectCapUngCu = iD_Cap;
-        this.showNavigateModal = true;
+      async showNavigateForm(ngayBD, iD_DonViBauCu, iD_Cap, type) {
+          // Tìm thông tin kỳ bầu cử hiện tại
+          const currentElection = this.rows.find(item => 
+              item.iD_DonViBauCu === iD_DonViBauCu && 
+              item.ngayBD.includes(ngayBD)
+          );
+
+          if (!currentElection) {
+              Swal.mixin({
+                  icon: 'error',
+                  title: 'Lỗi',
+                  text: 'Không tìm thấy thông tin kỳ bầu cử',
+                  confirmButtonText: 'Đóng',
+                  customClass: {
+                      container: 'my-swal'
+                  }
+              });
+              return;
+          }
+
+          let currentCount = 0;
+          let maxCount = 0;
+          let userType = '';
+
+          // Kiểm tra loại người dùng và số lượng tương ứng
+          switch(type) {
+              case 'voter':
+                  currentCount = currentElection.soLuongCuTriHienTai;
+                  maxCount = currentElection.soLuongToiDaCuTri;
+                  userType = 'cử tri';
+                  break;
+
+              case 'candidate':
+                  currentCount = currentElection.soLuongUngCuVienHienTai;
+                  maxCount = currentElection.soLuongToiDaUngCuVien;
+                  userType = 'ứng cử viên';
+                  break;
+
+              case 'cadre':
+                  currentCount = currentElection.soLuongCanBoHienTai;
+                  maxCount = currentElection.soLuongToiDaCanBo || Infinity;
+                  userType = 'cán bộ';
+                  break;
+          }
+
+          // Kiểm tra số lượng
+          if (currentCount >= maxCount) {
+              Swal.fire({
+                  icon: 'warning',
+                  title: 'Không thể thêm',
+                  text: `Số lượng ${userType} đã đạt tối đa (${maxCount})`,
+                  confirmButtonText: 'Đóng',
+              });
+              return;
+          }
+
+          // Nếu còn có thể thêm, tiến hành mở form
+          ngayBD = ngayBD.replace('T', ' ');
+          this.navigateType = type;
+          this.selectedNgayBD = ngayBD;
+          this.selectedDonViBauCu = iD_DonViBauCu;
+          this.selectCapUngCu = iD_Cap;
+          this.showNavigateModal = true;
+
+          // Lưu số lượng còn lại có thể thêm
+          this.remainingCapacity = maxCount - currentCount;
       },
 
       //Xử lý khi thêm thành công
@@ -462,5 +545,8 @@
     .buttons-container {
         flex-wrap: wrap;
     }
+}
+.my-swal {
+    z-index: 9999 !important; /* Higher than Vuetify's overlay */
 }
 </style>

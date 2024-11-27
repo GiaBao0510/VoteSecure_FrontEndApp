@@ -3,6 +3,9 @@ import api from './api.service';
 import 'js-cookie';
 
 function getAccessTokenFromCookie() {
+    const fromCookie = getCookie('accessToken');
+    const fromStorage = localStorage.getItem('accessToken');
+
     const name = "accessToken=";
     const decodedCookie = decodeURIComponent(document.cookie);
     const ca = decodedCookie.split(';');
@@ -15,10 +18,12 @@ function getAccessTokenFromCookie() {
         return c.substring(name.length, c.length);
       }
     }
-    return null; // Trả về null nếu không tìm thấy cookie
+    return null || fromCookie || fromStorage; // Trả về null nếu không tìm thấy cookie
   }
   
   function getRefreshTokenFromCookie() {
+    const fromCookie = getCookie('refreshToken');
+    const fromStorage = localStorage.getItem('refreshToken');
     const cookies = document.cookie.split(";");
     for (let i = 0; i < cookies.length; i++) {
       const cookie = cookies[i].trim();
@@ -26,7 +31,7 @@ function getAccessTokenFromCookie() {
         return cookie.substring("refreshToken=".length, cookie.length);
       }
     }
-    return null; // Trả về null nếu không tìm thấy cookie
+    return null || fromCookie || fromStorage; // Trả về null nếu không tìm thấy cookie
   }
 
 //Làm mới token
@@ -77,16 +82,29 @@ function getUserRole(){
 
 //Thiết lập token tùy chỉnh
 function setTokenCokies(accessToken, refreshToken){
-    // Bỏ thuộc tính secure khi chạy localhost
-    console.log('Setting accesstoken cookies');
-    const cookieStringAccess = `accessToken=${accessToken}; path=/; max-age=3600; samesite=strict`;
-    const cookieStringRefresh = `refreshToken=${refreshToken}; path=/; max-age=86400; samesite=strict`;
+    try{
+        // Set cookies with proper attributes
+        document.cookie = `accessToken=${accessToken}; path=/; max-age=3600; samesite=lax`;
+        document.cookie = `refreshToken=${refreshToken}; path=/; max-age=86400; samesite=lax`;
+        
+        // Also store in localStorage as fallback
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
 
-    Cookie.set('accessToken', cookieStringAccess);
-    Cookie.set('refreshToken', cookieStringRefresh);
-    console.log('>> AccessToken cookie:', Cookies.get('accessToken'));
-    console.log('>> refreshToken cookie :', Cookies.get('refreshToken'));
-    
+        // Bỏ thuộc tính secure khi chạy localhost
+        console.log('Setting accesstoken cookies');
+        const cookieStringAccess = `accessToken=${accessToken}; path=/; max-age=3600; samesite=strict`;
+        const cookieStringRefresh = `refreshToken=${refreshToken}; path=/; max-age=86400; samesite=strict`;
+
+        Cookies.set('accessToken', cookieStringAccess);
+        Cookies.set('refreshToken', cookieStringRefresh);
+        console.log('>> AccessToken cookie:', Cookies.get('accessToken'));
+        console.log('>> refreshToken cookie :', Cookies.get('refreshToken'));
+        return true;
+    }catch (error) {
+        console.error('Error setting cookies:', error);
+        return false;
+    }
 }
 
 //Lấy tên token từ cookie

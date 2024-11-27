@@ -118,6 +118,18 @@
               console.log("All cookies:", document.cookie);
               console.log("Access token:", authService.getAccessTokenFromCookie());
               const {accessToken, refreshToken} = response.data.data;
+
+              // Set tokens using auth service
+              const tokensSet = authService.setTokenCokies(accessToken, refreshToken);
+              console.log('Tokens set:', tokensSet);
+
+              // Xác thực token khi đặt
+              const savedAccessToken = authService.getAccessTokenFromCookie();
+              const savedRefreshToken = authService.getRefreshTokenFromCookie();
+              
+              if (!savedAccessToken || !savedRefreshToken) {
+                  throw new Error('Failed to save authentication tokens');
+              }
       
               // Thử set cookie với function mới
               const accessTokenSet = setSecureCookie('accessToken', accessToken, {
@@ -151,9 +163,8 @@
                 confirmButtonText: 'Đóng'
               });
 
-              this.$router.push('/admin');
-                
-                
+              await this.$router.push('/admin');
+              
             } else if(response.status === 400) {
                 Swal.fire({
                     icon: 'error',

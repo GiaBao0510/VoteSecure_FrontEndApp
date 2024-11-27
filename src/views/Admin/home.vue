@@ -331,8 +331,16 @@
               <div v-if="mucHienThi === 73">
                 <cadres :ComponnetName="'Danh sách cán bộ'"/>
               </div>
+              <div v-if="mucHienThi === 74">
+                <ListOfElectionsResultAnnounced 
+                  :ComponnetName="'Kết quả bầu cử'"
+                  :ngayBD="selectedNgayBD"
+                />
+              </div>
                   <!------------------------------------->
-              
+              <div v-if="mucHienThi === 12">
+                <workplaces :ComponnetName="'Hoạt động của cán bộ'" />
+              </div>
             </div>
           </div>
         </div>
@@ -354,12 +362,14 @@
   import feedbackVoter from './Feedback/getVoterFeedbackList.vue';
   import feedbackCadre from './Feedback/getCadreFeedbackList.vue';
   import feedbackCandidate from './Feedback/getCandidateFeedbackList.vue';
+  import ListOfElectionsResultAnnounced from './elections/ListOfElectionsResultAnnounced.vue';
   import voters from './voters/voters.vue';
   import statistical from './statistical/statistical.vue';
   import candidates from './candidates/candidates.vue';
   import cadres from './cadres/cadres.vue';
   import boards from './boards/boards.vue'; 
   import province from './provinces/provinces.vue';
+  import workplaces from './workplaces/workplaces.vue';
   import district from './districts/districts.vue';
   import listOfPositions from './listOfPositions/listOfPosition.vue';
   import GetDetailedEncryptedVotesBasedOnElectionYear from './votes/GetDetailedInformationAboutEncryptedVotesBasedOnElectionYear.vue';
@@ -373,7 +383,7 @@
 export default {
   components: {
     AdminHeader,
-    elections, GetDetailsListOfElectionBassedOnYear,
+    elections, GetDetailsListOfElectionBassedOnYear, ListOfElectionsResultAnnounced,
     SvgIcon,
     roles,
     constituencies,
@@ -387,7 +397,7 @@ export default {
     GetDetailedEncryptedVotesBasedOnElectionYear, EncryptedVotesBasedOnElectionDate,
     GetListOfDecodedVotesBasedOnElectionDate,
     voters, candidates, cadres,
-    statistical
+    statistical,workplaces
   },
   data() {
     return {
@@ -404,6 +414,7 @@ export default {
       phieuBauOpen: false,
       kyBauCuOpen: false,
       nguoiDungOpen: false,
+      selectedNgayBD: '',
       menuItems: [
         { title: 'Thống kê', icon: 'bi bi-graph-up' },        //0
         { title: 'Kỳ bầu cử', icon: 'bi bi-book' },   //1
@@ -482,7 +493,12 @@ export default {
       if(!accessToken || !authService.isTokenValid(accessToken) ){
         this.$router.push('/');
       }
-    }
+    },
+    //Hiển thị kết quả kỳ bầu cử
+    showElectionResults({ ngayBD }) {
+      this.selectedNgayBD = ngayBD;
+      this.mucHienThi = 74; // ID for election results view
+    },
   },
   mounted() {
     this.checkToken(); // Kiểm tra token khi component được tạo

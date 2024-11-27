@@ -28,9 +28,18 @@ export default {
         async addElection(election){
             this.isLoading = true;
             try {
+                // Hàm chuyển đổi định dạng ngày giờ
+                function formatDateTime(dateTimeStr) {
+                    const [datePart, timePart] = dateTimeStr.split(' ');
+                    const [day, month, year] = datePart.split('/');
+                    return `${year}-${month}-${day}T${timePart}`;
+                }
+
+                console.log("ngayBD: ",formatDateTime(election.ngayBD));
+                console.log("ngayKT: ",formatDateTime(election.ngayKT));
                 const response = await api.post(import.meta.env.VITE_ELECTION_API,{
-                    ngayBD: election.ngayBD, 
-                    ngayKT: election.ngayKT,
+                    ngayBD: formatDateTime(election.ngayBD), 
+                    ngayKT: formatDateTime(election.ngayKT),
                     tenKyBauCu: election.tenKyBauCu,
                     moTa: election.moTa,
                     soLuongToiDaCuTri: election.soLuongToiDaCuTri,
@@ -69,7 +78,7 @@ export default {
             } finally {
                 this.isLoading = false;
             }
-        }
+        },
     }
 }
 </script>

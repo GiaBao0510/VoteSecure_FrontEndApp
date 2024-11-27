@@ -152,15 +152,40 @@
                     >
                         Bỏ chọn tất cả
                     </v-btn>
+                    <div class="px-4 pt-2 d-flex align-center">
+                        <v-chip
+                            :color="selected.length <= remainingCapacity ? 'success' : 'error'"
+                            class="ms-auto"
+                        >
+                            {{ selected.length }}/{{ remainingCapacity }} người được chọn
+                        </v-chip>
+                    </div>
                 </v-sheet>
             </v-slide-x-transition>
         </v-card>
     </v-dialog>
+
+    <v-snackbar
+        v-model="snackbar.show"
+        :color="snackbar.color"
+        :timeout="3000"
+        location="top"
+    >
+        {{ snackbar.text }}
+        <template v-slot:actions>
+            <v-btn
+                color="white"
+                variant="text"
+                @click="snackbar.show = false"
+            >
+                Đóng
+            </v-btn>
+        </template>
+    </v-snackbar>
 </template>
 
 <script>
 import api from '@/services/api.service';
-import Swal from 'sweetalert2';
 
 export default {
     name: 'NavigateToElection',
@@ -169,7 +194,11 @@ export default {
         type: String,
         ngayBD: String,
         iD_DonViBauCu: Number,
-        iD_Cap: Number
+        iD_Cap: Number,
+        remainingCapacity: {
+            type: Number,
+            default: Infinity
+        }
     },
     data() {
         return {
@@ -179,6 +208,11 @@ export default {
             items: [],
             selected: [],
             searchQuery: '',
+            snackbar: {
+                show: false,
+                text: '',
+                color: 'success'
+            },
         };
     },
     computed: {
@@ -218,6 +252,13 @@ export default {
         selected: {
             handler(newVal) {
                 console.log('Selected items changed:', newVal);
+                console.log('Remaining capacity:', this.remainingCapacity);
+                console.log('Selected length:', newVal.length);
+                if (newVal.length > this.remainingCapacity) {
+                    this.showSnackbar(`Số lượng ${userType} đã đạt tối đa (${maxCount})`, 'warning');
+                    // Remove excess selections
+                    this.selected = newVal.slice(0, this.remainingCapacity);
+                }
             },
             deep: true
         }
@@ -245,12 +286,7 @@ export default {
                 }
             } catch (error) {
                 console.error('Error loading data:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi',
-                    text: 'Không thể tải danh sách người dùng',
-                    confirmButtonText: 'Đóng'
-                });
+                this.showSnackbar('Không thể tải danh sách người dùng', 'error');
             } finally {
                 this.isLoading = false;
             }
@@ -260,12 +296,12 @@ export default {
             console.log('Nút gửi đã được nhấn');
             console.log('Số lượt bình chọn đã chọn:', this.selected.length);
             if (this.selected.length === 0) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Chưa chọn người dùng',
-                    text: 'Vui lòng chọn ít nhất một người dùng để thêm vào kỳ bầu cử',
-                    confirmButtonText: 'Đóng'
-                });
+                this.showSnackbar(`Vui lòng chọn ít nhất một người dùng để thêm vào kỳ bầu cử`, 'warning');
+                return;
+            }
+
+            if (this.selected.length > this.remainingCapacity) {
+                this.showSnackbar(`Số lượng ${userType} đã đạt tối đa (${maxCount})`, 'warning');
                 return;
             }
 
@@ -314,26 +350,16 @@ export default {
                 console.log('Status code:', response.status);
                 
                 if (response.status === 200) {
-                    await Swal.fire({
-                        icon: 'success',
-                        title: 'Thành công',
-                        text: 'Đã thêm người dùng vào kỳ bầu cử',
-                        confirmButtonText: 'Đóng'
-                    });
+                    this.showSnackbar(`Đã thêm người dùng vào kỳ bầu cử`, 'success');
                     
-                    this.$emit('refresh');  // Emit refresh first
-                    this.showModal = false; // Close modal
-                    this.$emit('update:show', false); // Update parent
-                    this.resetForm(); // Reset form data
+                    this.$emit('refresh');
+                    this.$emit('update:show', false);  // This is crucial for v-model:show binding
+                    this.showModal = false;
+                    this.resetForm();
                 }
             } catch (error) {
                 console.error('Submit error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi',
-                    text: error.response?.data?.message || 'Đã xảy ra lỗi khi thêm người dùng',
-                    confirmButtonText: 'Đóng'
-                });
+                this.showSnackbar( error.response?.data?.message || 'Đã xảy ra lỗi khi thêm người dùng', 'error');
             }
         },
 
@@ -347,6 +373,13 @@ export default {
 
         closeModal() {
             this.showModal = false;
+        },
+
+        // Add showSnackbar helper method
+        showSnackbar(text, color = 'success') {
+            this.snackbar.text = text;
+            this.snackbar.color = color;
+            this.snackbar.show = true;
         }
     }
 };
@@ -389,5 +422,8 @@ export default {
     bottom: 0;
     z-index: 1;
     box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
+}
+.v-snackbar {
+    z-index: 9999;
 }
 </style>

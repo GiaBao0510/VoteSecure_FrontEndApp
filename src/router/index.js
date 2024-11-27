@@ -175,6 +175,19 @@ const routes =[
           name: 'navigateToElection',
           component: () => import("@/views/Admin/elections/NavigateToElection.vue"),
         },
+        //Danh sách các hoạt động cán bộ
+        {
+          path: 'Workplaces',
+          name: 'workplaces',
+          component: () => import("@/views/Admin/workplaces/workplaces.vue"),
+        },
+        //Danh sách kết quả bầu cử theo kỳ
+        {
+          path: '/list-of-elections-result-announced',
+          name: 'ListOfElectionsResultAnnounced',
+          component: () => import('@/views/Admin/elections/ListOfElectionsResultAnnounced.vue'),
+          props: (route) => ({ ngayBD: route.query.ngayBD })
+        }
       ]
     }
 ];

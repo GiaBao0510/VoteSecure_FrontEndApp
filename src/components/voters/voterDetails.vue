@@ -144,36 +144,36 @@
 
                     // Call separate API endpoint for image update
                     const response = await api.put(
-                    `${import.meta.env.VITE_VOTER_API}/update-image/${this.entityLocal.iD_CuTri}`,
-                    formData,
-                    {
-                        headers: {
-                        'Content-Type': 'multipart/form-data'
+                        `${import.meta.env.VITE_VOTER_API}/update-image/${this.entityLocal.iD_CuTri}`,
+                        formData,
+                        {
+                            headers: {
+                            'Content-Type': 'multipart/form-data'
+                            }
                         }
-                    }
                     );
 
                     if (response.status === 200) {
-                    // Update local image
-                    this.entityLocal.hinhAnh = response.data.data.hinhAnh;
-                    
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Thành công',
-                        text: 'Cập nhật ảnh thành công',
-                        confirmButtonText: 'Đóng'
-                    });
-                    
-                    // Emit update event to refresh parent
-                    this.$emit('update-Data');
+                        // Update local image
+                        this.entityLocal.hinhAnh = response.data.data.hinhAnh;
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                            text: 'Cập nhật ảnh thành công',
+                            confirmButtonText: 'Đóng'
+                        });
+                        
+                        // Emit update event to refresh parent
+                        this.$emit('update-Data');
                     }
                 } catch (error) {
                     console.error('Error updating image:', error);
                     Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi',
-                    text: error.response?.data?.message || 'Không thể cập nhật ảnh',
-                    confirmButtonText: 'Đóng'
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: error.response?.data?.message || 'Không thể cập nhật ảnh',
+                        confirmButtonText: 'Đóng'
                     });
                 }
             },
