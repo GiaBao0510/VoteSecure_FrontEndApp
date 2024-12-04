@@ -187,6 +187,13 @@ const routes =[
           name: 'ListOfElectionsResultAnnounced',
           component: () => import('@/views/Admin/elections/ListOfElectionsResultAnnounced.vue'),
           props: (route) => ({ ngayBD: route.query.ngayBD })
+        },
+        //Danh sách người dùng chưa bỏ phiếu theo kỳ bầu cử
+        {
+          path: '/get-list-of-users-who-have-not-voted-by-election',
+          name: 'GetListOfUsersWhoHaveNotVotedByElection',
+          component: () => import('@/views/Admin/elections/GetListOfUsersWhoHaveNotVotedByElection.vue'),
+          props: (route) => ({ ngayBD: route.query.ngayBD })
         }
       ]
     }

@@ -128,6 +128,18 @@
                 </v-btn>
             </v-card-actions>
 
+            <div class="d-flex align-center justify-space-between pa-2 bg-grey-lighten-4">
+                <span class="text-caption">
+                    Còn có thể chọn: {{ remainingCapacity - selected.length }} {{ userType }}
+                </span>
+                <v-chip
+                    :color="selected.length <= remainingCapacity ? 'success' : 'error'"
+                    size="small"
+                >
+                    {{ selected.length }}/{{ remainingCapacity }}
+                </v-chip>
+            </div>
+
             <!-- Selection Summary -->
             <v-slide-x-transition>
                 <v-sheet
@@ -231,6 +243,14 @@ export default {
                 item.hoTen.toLowerCase().includes(query) ||
                 item.iD_object.toString().includes(query)
             );
+        },
+        userType() {
+            switch(this.type) {
+                case 'voter': return 'cử tri';
+                case 'candidate': return 'ứng cử viên';
+                case 'cadre': return 'cán bộ';
+                default: return 'người dùng';
+            }
         }
     },
     watch: {
@@ -251,13 +271,22 @@ export default {
         // Add watcher for selected array
         selected: {
             handler(newVal) {
-                console.log('Selected items changed:', newVal);
+                if (!Array.isArray(newVal)) return;
+                
+                console.log('Selected count:', newVal.length);
                 console.log('Remaining capacity:', this.remainingCapacity);
-                console.log('Selected length:', newVal.length);
+
                 if (newVal.length > this.remainingCapacity) {
-                    this.showSnackbar(`Số lượng ${userType} đã đạt tối đa (${maxCount})`, 'warning');
+                    // Show warning
+                    this.showSnackbar(
+                        `Chỉ có thể chọn tối đa ${this.remainingCapacity} ${this.userType}`,
+                        'warning'
+                    );
+                    
                     // Remove excess selections
-                    this.selected = newVal.slice(0, this.remainingCapacity);
+                    this.$nextTick(() => {
+                        this.selected = newVal.slice(0, this.remainingCapacity);
+                    });
                 }
             },
             deep: true
@@ -293,15 +322,19 @@ export default {
         },
 
         async handleSubmit() {
-            console.log('Nút gửi đã được nhấn');
-            console.log('Số lượt bình chọn đã chọn:', this.selected.length);
             if (this.selected.length === 0) {
-                this.showSnackbar(`Vui lòng chọn ít nhất một người dùng để thêm vào kỳ bầu cử`, 'warning');
+                this.showSnackbar(
+                    `Vui lòng chọn ít nhất một ${this.userType} để thêm vào kỳ bầu cử`,
+                    'warning'
+                );
                 return;
             }
 
             if (this.selected.length > this.remainingCapacity) {
-                this.showSnackbar(`Số lượng ${userType} đã đạt tối đa (${maxCount})`, 'warning');
+                this.showSnackbar(
+                    `Không thể thêm quá ${this.remainingCapacity} ${this.userType}`,
+                    'error'
+                );
                 return;
             }
 
@@ -310,6 +343,10 @@ export default {
                 await this.submitSelection();
             } catch (error) {
                 console.error('Submit error:', error);
+                this.showSnackbar(
+                    error.response?.data?.message || 'Đã xảy ra lỗi',
+                    'error'
+                );
             } finally {
                 this.isSaving = false;
             }

@@ -337,6 +337,12 @@
                   :ngayBD="selectedNgayBD"
                 />
               </div>
+              <div v-if="mucHienThi === 75">
+                <GetListOfUsersWhoHaveNotVotedByElection 
+                  :ComponnetName="'Danh sách người dùng chưa bỏ phiếu'"
+                  :ngayBD="selectedNgayBD"
+                />
+              </div>
                   <!------------------------------------->
               <div v-if="mucHienThi === 12">
                 <workplaces :ComponnetName="'Hoạt động của cán bộ'" />
@@ -363,6 +369,7 @@
   import feedbackCadre from './Feedback/getCadreFeedbackList.vue';
   import feedbackCandidate from './Feedback/getCandidateFeedbackList.vue';
   import ListOfElectionsResultAnnounced from './elections/ListOfElectionsResultAnnounced.vue';
+  import GetListOfUsersWhoHaveNotVotedByElection from './elections/GetListOfUsersWhoHaveNotVotedByElection.vue';
   import voters from './voters/voters.vue';
   import statistical from './statistical/statistical.vue';
   import candidates from './candidates/candidates.vue';
@@ -384,6 +391,7 @@ export default {
   components: {
     AdminHeader,
     elections, GetDetailsListOfElectionBassedOnYear, ListOfElectionsResultAnnounced,
+    GetListOfUsersWhoHaveNotVotedByElection,
     SvgIcon,
     roles,
     constituencies,
@@ -499,6 +507,11 @@ export default {
       this.selectedNgayBD = ngayBD;
       this.mucHienThi = 74; // ID for election results view
     },
+    //Hiển thị danh sách các người dùng chưa bỏ phiếu
+    showUserHaveNotVoted({ ngayBD }) {
+      this.selectedNgayBD = ngayBD;
+      this.mucHienThi = 75; // ID for users who have not voted view
+    }
   },
   mounted() {
     this.checkToken(); // Kiểm tra token khi component được tạo

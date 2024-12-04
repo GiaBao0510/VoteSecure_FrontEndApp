@@ -94,100 +94,122 @@
               </v-row>
             </v-list-item-subtitle>
   
-              <v-list-item-action class="action-container">
-                <!-- Status Chip -->
-                <div class="status-section mb-2">
-                    <v-chip
-                        :color="item.congBo === '1' ? 'success' : 'warning'"
-                        size="small"
-                    >
-                        {{ item.congBo == '1' ? 'Đã công bố' : 'Chưa công bố' }}
-                    </v-chip>
-                </div>
+            <v-list-item-action class="action-container pa-2">
+              <!-- Status Row -->
+              <div class="d-flex justify-start mb-3">
+                  <v-chip
+                      :color="item.congBo === '1' ? 'success' : 'warning'"
+                      size="small"
+                  >
+                      {{ item.congBo == '1' ? 'Đã công bố' : 'Chưa công bố' }}
+                  </v-chip>
+              </div>
 
-                <!-- Scrollable Button Container -->
-                <div class="buttons-container">
-                    <!-- Vote Management Group -->
-                    <div class="button-group">
-                        <v-btn
-                            color="primary"
-                            @click="viewEncryptedVotes(item.ngayBD)"
-                            class="action-btn"
-                            small
-                        >
-                            <v-icon>mdi-lock</v-icon>
-                            <span>Phiếu mã hóa</span>
-                        </v-btn>
+              <!-- Scrollable Actions Container -->
+              <div class="actions-scroll-container">
+                  <div class="actions-wrapper">
+                      <!-- Vote Management Group -->
+                      <div class="button-group px-2">
+                          <v-btn
+                              color="primary"
+                              @click="viewEncryptedVotes(item.ngayBD)"
+                              class="action-btn"
+                              density="comfortable"
+                          >
+                              <v-icon size="small" class="mr-1">mdi-lock</v-icon>
+                              Phiếu mã hóa
+                          </v-btn>
 
-                        <v-btn
-                            color="primary"
-                            variant="outlined"
-                            @click="viewDecodedVotes(item.ngayBD)"
-                            class="action-btn"
-                            small
-                        >
-                            <v-icon>mdi-lock-open</v-icon>
-                            <span>Phiếu giải mã</span>
-                        </v-btn>
+                          <v-btn
+                              color="primary"
+                              variant="outlined"
+                              @click="viewDecodedVotes(item.ngayBD)"
+                              class="action-btn"
+                              density="comfortable"
+                          >
+                              <v-icon size="small" class="mr-1">mdi-lock-open</v-icon>
+                              Phiếu giải mã
+                          </v-btn>
 
-                        <v-btn
-                            color="primary"
-                            @click="viewDecodedVotes(item.ngayBD)"
-                            class="action-btn"
-                            small
-                        >
-                            <v-icon>mdi-account-group</v-icon>
-                            <span>Ứng cử viên</span>
-                        </v-btn>
-                    </div>
+                          <v-btn
+                              color="primary"
+                              @click="viewDecodedVotes(item.ngayBD)"
+                              class="action-btn"
+                              density="comfortable"
+                          >
+                              <v-icon size="small" class="mr-1">mdi-account-group</v-icon>
+                              Ứng cử viên
+                          </v-btn>
+                      </div>
 
-                    <!-- User Management Group -->
-                    <div class="button-group">
-                        <v-btn
-                            color="success"
-                            @click="showNavigateForm(item.ngayBD, item.iD_DonViBauCu, item.iD_Cap,'voter')"
-                            class="action-btn"
-                            small
-                        >
-                            <v-icon>mdi-account-plus</v-icon>
-                            <span>Thêm cử tri</span>
-                        </v-btn>
+                      <!-- Divider -->
+                      <v-divider vertical class="mx-2"></v-divider>
 
-                        <v-btn
-                            color="info"
-                            @click="showNavigateForm(item.ngayBD, item.iD_DonViBauCu, item.iD_Cap, 'candidate')"
-                            class="action-btn"
-                            small
-                        >
-                            <v-icon>mdi-account-tie</v-icon>
-                            <span>Thêm ứng viên</span>
-                        </v-btn>
+                      <!-- User Management Group -->
+                      <div class="button-group px-2">
+                          <v-btn
+                              color="success"
+                              @click="showNavigateForm(item.ngayBD, item.iD_DonViBauCu, item.iD_Cap,'voter')"
+                              class="action-btn"
+                              density="comfortable"
+                          >
+                              <v-icon size="small" class="mr-1">mdi-account-plus</v-icon>
+                              Thêm cử tri
+                          </v-btn>
 
-                        <v-btn
-                            color="warning"
-                            @click="showNavigateForm(item.ngayBD, item.iD_DonViBauCu, item.iD_Cap, 'cadre')"
-                            class="action-btn"
-                            small
-                        >
-                            <v-icon>mdi-account-cog</v-icon>
-                            <span>Thêm cán bộ</span>
-                        </v-btn>
-                    </div>
+                          <v-btn
+                              color="info"
+                              @click="showNavigateForm(item.ngayBD, item.iD_DonViBauCu, item.iD_Cap, 'candidate')"
+                              class="action-btn"
+                              density="comfortable"
+                          >
+                              <v-icon size="small" class="mr-1">mdi-account-tie</v-icon>
+                              Thêm ứng viên
+                          </v-btn>
 
-                    <!-- Result Management -->
-                    <div class="button-group">
-                        <v-btn
-                            @click="AnnounceElectionResult(item.ngayBD,item.congBo)"
-                            :color="item.congBo === '1' ? 'warning' : 'info'"
-                            class="action-btn"
-                            small
-                        >
-                            <v-icon>mdi-bullhorn</v-icon>
-                            <span>Kết quả kỳ bầu cử</span>
-                        </v-btn>
-                    </div>
-                </div>
-            </v-list-item-action>
+                          <v-btn
+                              color="warning"
+                              @click="showNavigateForm(item.ngayBD, item.iD_DonViBauCu, item.iD_Cap, 'cadre')"
+                              class="action-btn"
+                              density="comfortable"
+                          >
+                              <v-icon size="small" class="mr-1">mdi-account-cog</v-icon>
+                              Thêm cán bộ
+                          </v-btn>
+                      </div>
+
+                      <!-- Divider -->
+                      <v-divider vertical class="mx-2"></v-divider>
+
+                      <!-- Result Management -->
+                      <div class="button-group px-2">
+                          <v-btn
+                              @click="AnnounceElectionResult(item.ngayBD,item.congBo)"
+                              :color="item.congBo === '1' ? 'warning' : 'info'"
+                              class="action-btn"
+                              density="comfortable"
+                          >
+                              <v-icon size="small" class="mr-1">mdi-bullhorn</v-icon>
+                              Kết quả kỳ bầu cử
+                          </v-btn>
+                      </div>
+
+                      <v-divider vertical class="mx-1"></v-divider>
+
+                      <div class="button-group px-2">
+                          <v-btn
+                              @click="GetListOfUsersHaveNotVote(item.ngayBD,item.congBo)"
+                              :color="item.congBo === '1' ? 'warning' : 'info'"
+                              class="action-btn"
+                              density="comfortable"
+                          >
+                              <v-icon size="small" class="mr-1">mdi-information</v-icon>
+                              Danh sách các ứng cử viên chưa bỏ phiếu
+                          </v-btn>
+                      </div>
+                  </div>
+              </div>
+          </v-list-item-action>
           </v-list-item>
         </v-list>
   
@@ -221,6 +243,7 @@
   import EncryptedBallotList from '../votes/GetDetailedInformationAboutEncryptedVotesBasedOnElectionYear.vue';
   import Swal from "sweetalert2";
   import ListOfElectionsResultAnnounced from './ListOfElectionsResultAnnounced.vue';
+  import GetListOfUsersWhoHaveNotVotedByElection from './GetListOfUsersWhoHaveNotVotedByElection.vue';
   import NavigateToElection from './NavigateToElection.vue';
 
   export default {
@@ -230,7 +253,8 @@
       YearSelector,
       EncryptedBallotList,
       NavigateToElection,
-      ListOfElectionsResultAnnounced
+      ListOfElectionsResultAnnounced,
+      GetListOfUsersWhoHaveNotVotedByElection
     },
     props: {
       ComponnetName: {
@@ -368,7 +392,7 @@
           });
       },
 
-        //Công bố kết quả
+      //Công bố kết quả
       async AnnounceElectionResult(ngayBD, CongBo){
           try{
             if(CongBo === '0'){
@@ -386,6 +410,39 @@
             
             // Emit event to parent (home.vue)
             this.$parent.showElectionResults({
+              ngayBD: ngayBD
+            });
+          }catch (error) {
+              console.error('Error viewing election results:', error);
+              console.error('Error response:', error.response);
+              console.error('Error Message:', error.Message);
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Lỗi',
+                  text: 'Không thể xem kết quả bầu cử',
+                  confirmButtonText: 'Đóng'
+              });
+          }
+      },
+
+      //Danh sách người dùng chưa bỏ phiếu
+      async GetListOfUsersHaveNotVote(ngayBD, CongBo){
+          try{
+            if(CongBo === '0'){
+              await Swal.fire({
+                  icon: 'warning',
+                  title: 'Thông báo',
+                  text: 'Kết quả bầu cử chưa được công bố!',
+                  confirmButtonText: 'Đóng'
+              });
+              return;
+            }
+            // Nếu đã công bố, chuyển đến trang kết quả
+            ngayBD = ngayBD.replace('T', ' ');
+            console.log('Xem kết quả bầu cử theo ngayBD:', ngayBD);
+            
+            // Emit event to parent (home.vue)
+            this.$parent.showUserHaveNotVoted({
               ngayBD: ngayBD
             });
           }catch (error) {
@@ -492,61 +549,82 @@
 <style scoped>
     @import url('../../../assets/ThuVien/GetDetailsListOfElectionBassedOnYear.css');
     .action-container {
-    display: flex;
-    flex-direction: column;
     width: 100%;
-    gap: 8px;
+    background: #f8f9fa;
+    border-radius: 8px;
 }
 
-.status-section {
-    display: flex;
-    justify-content: flex-start;
-}
-
-.buttons-container {
-    display: flex;
-    flex-wrap: nowrap;
+.actions-scroll-container {
+    position: relative;
+    width: 100%;
     overflow-x: auto;
-    gap: 16px;
-    padding: 8px 0;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: #90A4AE #CFD8DC;
 }
 
-.buttons-container::-webkit-scrollbar {
-    display: none;
+.actions-scroll-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.actions-scroll-container::-webkit-scrollbar-track {
+    background: #CFD8DC;
+    border-radius: 3px;
+}
+
+.actions-scroll-container::-webkit-scrollbar-thumb {
+    background: #90A4AE;
+    border-radius: 3px;
+}
+
+.actions-wrapper {
+    display: flex;
+    align-items: center;
+    min-width: min-content;
+    padding: 8px 0;
 }
 
 .button-group {
     display: flex;
     gap: 8px;
     flex-wrap: nowrap;
+    align-items: center;
 }
 
 .action-btn {
     white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
     min-width: fit-content;
+    text-transform: none !important;
 }
 
+/* Responsive Styles */
 @media (max-width: 960px) {
-    .button-group {
-        flex-wrap: nowrap;
+    .actions-wrapper {
+        padding: 8px;
     }
     
-    .buttons-container {
-        padding-bottom: 16px;
+    .button-group {
+        flex-shrink: 0;
+    }
+    
+    .v-divider {
+        flex-shrink: 0;
     }
 }
 
 @media (min-width: 961px) {
-    .buttons-container {
-        flex-wrap: wrap;
+    .actions-scroll-container {
+        overflow-x: auto;
+    }
+    
+    .actions-wrapper {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
     }
 }
-.my-swal {
-    z-index: 9999 !important; /* Higher than Vuetify's overlay */
+
+/* Smooth Scrolling */
+.actions-scroll-container {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
 }
 </style>
