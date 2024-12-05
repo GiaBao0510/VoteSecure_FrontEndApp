@@ -1,5 +1,6 @@
 import { createWebHashHistory, createRouter } from "vue-router";
 import Login from '@/views/Login.vue';
+import authService from "../services/auth.service";
 
 const routes =[
     //Trang chính (Đăng nhập)
@@ -132,7 +133,7 @@ const routes =[
           component: () => import("@/views/Admin/votes/GetDetailedInformationAboutEncryptedVotesBasedOnElectionYear.vue"),
         },
         //Danh sách phiếu bầu mã hóa theo thời điểm
-        {
+        { 
           path: 'EncryptedVotesBasedOnElectionDate',
           name: 'encryptedVotesBasedOnElectionDate',
           component: () => import("@/views/Admin/votes/GetDetailsAboutEncryptedVotesBasedOnElectionDate.vue"),
@@ -202,6 +203,25 @@ const routes =[
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const accessToken = authService.getAccessTokenFromCookie();
+  const isAuthenticated = accessToken && authService.isTokenValid(accessToken);
+
+  // Redirect to login if trying to access protected route without auth
+  if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
+    next({ name: 'Login' });
+    return;
+  }
+
+  // Redirect to admin if already authenticated and trying to access login
+  if (to.name === 'Login' && isAuthenticated) {
+    next({ name: 'HomeAdmin' });
+    return;
+  }
+
+  next();
 });
 
 export default router;

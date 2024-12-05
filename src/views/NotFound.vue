@@ -7,12 +7,39 @@
             <div class="col-sm mt-4 d-flex flex-column align-items-center justify-content-center">
                 <h3 class="TieuDeLoi">Oops! Page not found</h3>
                 <h4>Sorry, but the page you are looking for was not found. Please, make sure you have typed the correct URL.</h4>
-                <router-link to="/" class="btn btn-primary mt-3 ">Go to Home</router-link>
-            </div>
+                <button @click="goToHome" class="btn btn-primary mt-3">
+                    Go to Home
+                </button>
+            </div> 
         </div>
     </div>
 </template>
 
+<script>
+import authService from '../services/auth.service';
+
+export default {
+    name: 'NotFound',
+    methods: {
+        goToHome() {
+            const accessToken = authService.getAccessTokenFromCookie();
+            const isAuthenticated = accessToken && authService.isTokenValid(accessToken);
+            
+            if (isAuthenticated) {
+                this.$router.push({ name: 'HomeAdmin' });
+            } else {
+                // Clear any stale tokens
+                document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                
+                this.$router.push({ name: 'Login' });
+            }
+        }
+    }
+}
+</script>
 <style>
     .TieuDeLoi {
         color: gray;
