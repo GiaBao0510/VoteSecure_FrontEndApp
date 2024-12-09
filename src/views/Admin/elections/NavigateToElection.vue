@@ -352,7 +352,7 @@ export default {
             }
         },
 
-        async submitSelection() {
+        async submitSelection() { 
             try {
                 let apiEndpoint, PayLoad;
                 switch(this.type) {
@@ -361,7 +361,7 @@ export default {
                         PayLoad = {
                             ngayBD: this.ngayBD,
                             ID_DonViBauCu: this.iD_DonViBauCu,
-                            listIDVoter: this.selected
+                            listIDVoter: this.selected,
                         };
                         break;
                     case 'candidate':
@@ -369,6 +369,7 @@ export default {
                         PayLoad = {
                             ngayBD: this.ngayBD,
                             ID_Cap: this.iD_Cap,
+                            ID_DonViBauCu: this.iD_DonViBauCu,
                             listIDCandidate: this.selected
                         };
                         break;
@@ -376,6 +377,7 @@ export default {
                         apiEndpoint = import.meta.env.VITE_NAVIGATING_CADRES_IN_THE_ELECTION_API;
                         PayLoad = {
                             ngayBD: this.ngayBD,
+                            ID_DonViBauCu: this.iD_DonViBauCu,
                             ListID_canbo: this.selected
                         };
                         break;
